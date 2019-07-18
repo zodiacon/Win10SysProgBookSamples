@@ -22,5 +22,6 @@ int main(int argc, const char* argv[]) {
 	else {
 		printf("No such error exists\n");
 	}
+	return 0;
 }
 
