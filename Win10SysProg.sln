@@ -9,6 +9,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWin", "Chapter01\Hello
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShowError", "Chapter01\ShowError\ShowError.vcxproj", "{CA33502C-28A4-4EB0-80E2-6FCA4363662C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chapter02", "Chapter02", "{1BC36DC0-D0FA-4CA0-B189-E2205B339A63}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SingleInstance", "SingleInstance\SingleInstance.vcxproj", "{9340A888-9A4C-462C-8DA3-CBC035BA2A23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +37,14 @@ Global
 		{CA33502C-28A4-4EB0-80E2-6FCA4363662C}.Release|x64.Build.0 = Release|x64
 		{CA33502C-28A4-4EB0-80E2-6FCA4363662C}.Release|x86.ActiveCfg = Release|Win32
 		{CA33502C-28A4-4EB0-80E2-6FCA4363662C}.Release|x86.Build.0 = Release|Win32
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Debug|x64.ActiveCfg = Debug|x64
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Debug|x64.Build.0 = Debug|x64
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Debug|x86.ActiveCfg = Debug|Win32
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Debug|x86.Build.0 = Debug|Win32
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Release|x64.ActiveCfg = Release|x64
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Release|x64.Build.0 = Release|x64
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Release|x86.ActiveCfg = Release|Win32
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,6 +52,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{549A606C-EB50-4A26-982A-805D322D0CA2} = {7A920E8D-C2B0-430B-B91F-152A1F099C33}
 		{CA33502C-28A4-4EB0-80E2-6FCA4363662C} = {7A920E8D-C2B0-430B-B91F-152A1F099C33}
+		{9340A888-9A4C-462C-8DA3-CBC035BA2A23} = {1BC36DC0-D0FA-4CA0-B189-E2205B339A63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F88B16D5-AC91-4B25-BBC1-905C9C44BD7F}

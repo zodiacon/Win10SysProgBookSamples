@@ -1,0 +1,1 @@
+// SingleInstance.h
