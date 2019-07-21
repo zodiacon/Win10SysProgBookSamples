@@ -5,15 +5,11 @@
 
 int main() {
 	SYSTEM_INFO si;
-	::GetSystemInfo(&si);
+	::GetNativeSystemInfo(&si);
 
 	printf("Number of Logical Processors: %d\n", si.dwNumberOfProcessors);
 	printf("Page size: %d Bytes\n", si.dwPageSize);
-#ifdef _WIN64
-		printf("Processor Mask: %016llX\n", si.dwActiveProcessorMask);
-#else
-		printf("Processor Mask: %08X\n", si.dwActiveProcessorMask);
-#endif
+	printf("Processor Mask: 0x%p\n", (PVOID)si.dwActiveProcessorMask);
 	printf("Minimum process address: 0x%p\n", si.lpMinimumApplicationAddress);
 	printf("Maximum process address: 0x%p\n", si.lpMaximumApplicationAddress);
 
