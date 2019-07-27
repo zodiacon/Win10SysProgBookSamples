@@ -59,3 +59,11 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 	EndDialog(wID);
 	return 0;
 }
+
+LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	if (m_hSharedMem)
+		::CloseHandle(m_hSharedMem);
+	return 0;
+}
+
+
