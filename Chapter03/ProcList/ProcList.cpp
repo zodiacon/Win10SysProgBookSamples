@@ -13,7 +13,8 @@ int main() {
 	if (hSnapshot == INVALID_HANDLE_VALUE)
 		return Error("Failed to create snapshot");
 
-	PROCESSENTRY32 pe = { sizeof(pe) };
+	PROCESSENTRY32 pe;
+	pe.dwSize = sizeof(pe);
 
 	if (!::Process32First(hSnapshot, &pe))
 		return Error("Failed in Process32First");
