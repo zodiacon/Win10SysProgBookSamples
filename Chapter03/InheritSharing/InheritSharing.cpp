@@ -1,4 +1,4 @@
-// PrivateSharing.cpp : main source file for PrivateSharing.exe
+// InheritSharing.cpp : main source file for InheritSharing.exe
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 
 CAppModule _Module;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpstrCmdLine*/, int /*nCmdShow*/) {
+int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow) {
 	HRESULT hRes = ::CoInitialize(nullptr);
 	ATLASSERT(SUCCEEDED(hRes));
 

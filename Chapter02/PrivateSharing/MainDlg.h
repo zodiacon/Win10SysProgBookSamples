@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "resource.h"
+
 class CMainDlg : public CDialogImpl<CMainDlg> {
 public:
 	enum { IDD = IDD_MAINDLG };

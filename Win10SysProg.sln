@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProcList", "Chapter03\ProcL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetroManager", "Chapter03\MetroManager\MetroManager.vcxproj", "{2F298285-08E3-4BE5-BED7-75163CB02D96}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InheritSharing", "Chapter03\InheritSharing\InheritSharing.vcxproj", "{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -107,6 +109,14 @@ Global
 		{2F298285-08E3-4BE5-BED7-75163CB02D96}.Release|x64.Build.0 = Release|x64
 		{2F298285-08E3-4BE5-BED7-75163CB02D96}.Release|x86.ActiveCfg = Release|Win32
 		{2F298285-08E3-4BE5-BED7-75163CB02D96}.Release|x86.Build.0 = Release|Win32
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Debug|x64.ActiveCfg = Debug|x64
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Debug|x64.Build.0 = Debug|x64
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Debug|x86.ActiveCfg = Debug|Win32
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Debug|x86.Build.0 = Debug|Win32
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Release|x64.ActiveCfg = Release|x64
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Release|x64.Build.0 = Release|x64
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Release|x86.ActiveCfg = Release|Win32
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +131,7 @@ Global
 		{9E990D1F-1E70-4903-967F-DA97E9000060} = {BA1C087F-8DCB-46E2-81C1-0A24A0FD72E6}
 		{A29EC1E7-8275-4B13-B059-ECBDB3C775F9} = {BA1C087F-8DCB-46E2-81C1-0A24A0FD72E6}
 		{2F298285-08E3-4BE5-BED7-75163CB02D96} = {BA1C087F-8DCB-46E2-81C1-0A24A0FD72E6}
+		{9E64E1A1-5F94-4527-BEBD-325B8E1FB061} = {BA1C087F-8DCB-46E2-81C1-0A24A0FD72E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F88B16D5-AC91-4B25-BBC1-905C9C44BD7F}
