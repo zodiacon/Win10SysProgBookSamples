@@ -26,6 +26,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		// first "real" argument is inherited handle value
 		m_hSharedMem.reset((HANDLE)(ULONG_PTR)::_wtoi(args[1]));
 	}
+	::LocalFree(args);
+
 	ATLASSERT(m_hSharedMem);
 
 	return TRUE;
