@@ -1,3 +1,5 @@
+#include "..\..\Chapter04\JobMon\MainDlg.h"
+#include "..\..\Chapter04\JobMon\MainDlg.h"
 // MainDlg.cpp : implementation of the CMainDlg class
 //
 /////////////////////////////////////////////////////////////////////////////
