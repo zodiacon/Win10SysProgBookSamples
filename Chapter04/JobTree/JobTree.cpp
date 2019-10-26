@@ -40,9 +40,7 @@ HANDLE CreateJobHierarchy() {
 	success = ::AssignProcessToJobObject(hJob1, hProcess3);
 	assert(success);
 
-	::CloseHandle(hProcess1);
-	::CloseHandle(hProcess2);
-	::CloseHandle(hProcess3);
+	// not bothering closing process and job2 handles
 
 	return hJob1;
 }
@@ -52,5 +50,7 @@ int main() {
 	printf("Press any key to terminate parent job...\n");
 	::getchar();
 	::TerminateJobObject(hJob, 0);
+
+	return 0;
 }
 

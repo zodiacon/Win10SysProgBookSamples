@@ -231,10 +231,10 @@ void CMainDlg::UpdateJob() {
 			BeginWriteInfo(IDC_GROUP_INFO);
 			AddDataItem(L"Active Processes:", info.BasicInfo.ActiveProcesses);
 			AddDataItem(L"Total Processes:", info.BasicInfo.TotalProcesses);
-			AddDataItem(L"Terminated Processes", info.BasicInfo.TotalTerminatedProcesses);
-			AddDataItem(L"Total User Time", CTimeSpan(ToSeconds(info.BasicInfo.TotalUserTime.QuadPart)));
-			AddDataItem(L"Total Kernel Time", CTimeSpan(ToSeconds(info.BasicInfo.TotalKernelTime.QuadPart)));
-			AddDataItem(L"Total CPU Time", CTimeSpan(ToSeconds(info.BasicInfo.TotalUserTime.QuadPart + info.BasicInfo.TotalKernelTime.QuadPart)));
+			AddDataItem(L"Terminated Processes:", info.BasicInfo.TotalTerminatedProcesses);
+			AddDataItem(L"Total User Time:", CTimeSpan(ToSeconds(info.BasicInfo.TotalUserTime.QuadPart)));
+			AddDataItem(L"Total Kernel Time:", CTimeSpan(ToSeconds(info.BasicInfo.TotalKernelTime.QuadPart)));
+			AddDataItem(L"Total CPU Time:", CTimeSpan(ToSeconds(info.BasicInfo.TotalUserTime.QuadPart + info.BasicInfo.TotalKernelTime.QuadPart)));
 
 			BeginWriteInfo(IDC_GROUP_IO);
 			AddDataItem(L"Read Transfer:", CString(std::to_wstring(info.IoInfo.ReadTransferCount >> 10).c_str()) + L" KB");
@@ -254,7 +254,7 @@ void CMainDlg::UpdateJob() {
 			m_ProcessList.clear();
 			m_ProcessList.reserve(info->NumberOfProcessIdsInList);
 			for (DWORD i = 0; i < info->NumberOfProcessIdsInList; i++) {
-				DWORD pid = static_cast<DWORD>(info->ProcessIdList[i]);
+				auto pid = static_cast<DWORD>(info->ProcessIdList[i]);
 				ProcessInfo pi;
 				pi.Name = GetProcessName(pid);
 				pi.Id = pid;
