@@ -23,13 +23,13 @@ LRESULT CMainDlg::OnLimitSelectionChanged(WORD, WORD, HWND, BOOL&) {
 	switch (type) {
 		case JobLimitType::ProcessMemory:
 		case JobLimitType::JobMemory:
-		case JobLimitType::WorkingSet:
+		case JobLimitType::MaxWorkingSet:
 		{
 			static struct {
 				PCWSTR Name;
 				int Factor;
 			} units[] = {
-				{ L"KB", 10 },
+//				{ L"KB", 10 },
 				{ L"MB", 20 },
 				{ L"GB", 30 }
 			};
@@ -45,6 +45,10 @@ LRESULT CMainDlg::OnLimitSelectionChanged(WORD, WORD, HWND, BOOL&) {
 
 		case JobLimitType::ActiveProcesses:
 			m_ValueCombo.ShowWindow(SW_HIDE);
+			m_EditValue.ShowWindow(SW_SHOW);
+			break;
+
+		case JobLimitType::Affinity:
 			m_EditValue.ShowWindow(SW_SHOW);
 			break;
 
@@ -171,7 +175,7 @@ void CMainDlg::BuildLimitList() {
 		{ L"Scheduling Class", JobLimitType::SchedulingClass },
 		{ L"Affinity", JobLimitType::Affinity },
 		{ L"CPU Rate Control", JobLimitType::CpuRateControl },
-		{ L"Working Set", JobLimitType::WorkingSet },
+		{ L"Maximum Working Set", JobLimitType::MaxWorkingSet },
 		{ L"Priority Class", JobLimitType::PriorityClass },
 		{ L"Die on Unhandled Exception", JobLimitType::DieOnUnhandledException },
 		{ L"User Interface - Desktop", JobLimitType::UserInterface_Desktop },
@@ -286,7 +290,6 @@ void CMainDlg::BeginWriteInfo(UINT id) {
 	m_Height = size.cy + 4;
 }
 
-
 void CMainDlg::RefreshSystemProcessList() {
 	wil::unique_handle hSnapshot(::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
 	if (!hSnapshot)
@@ -359,9 +362,11 @@ void CMainDlg::UpdateJobLimits() {
 			if (flags & JOB_OBJECT_LIMIT_AFFINITY)
 				AddLimit(L"Affinity: ", info.BasicLimitInformation.Affinity);
 			if (flags & JOB_OBJECT_LIMIT_JOB_MEMORY)
-				AddLimit(L"Job Memory: " + std::to_wstring(info.JobMemoryLimit >> 10) + L" KB");
+				AddLimit(L"Job Memory: " + std::to_wstring(info.JobMemoryLimit >> 20) + L" MB");
 			if (flags & JOB_OBJECT_LIMIT_PROCESS_MEMORY)
-				AddLimit(L"Process Memory: " + std::to_wstring(info.ProcessMemoryLimit >> 10) + L" KB");
+				AddLimit(L"Process Memory: " + std::to_wstring(info.ProcessMemoryLimit >> 20) + L" MB");
+			if (flags & JOB_OBJECT_LIMIT_WORKINGSET)
+				AddLimit(L"Maximum Working Set: " + std::to_wstring(info.BasicLimitInformation.MaximumWorkingSetSize >> 20) + L" MB");
 		}
 	}
 	{
@@ -586,6 +591,7 @@ LRESULT CMainDlg::OnBrowse(WORD, WORD wID, HWND, BOOL&) {
 
 LRESULT CMainDlg::OnSetLimit(WORD, WORD wID, HWND, BOOL&) {
 	BOOL success = FALSE;
+	CString text;
 	JOBOBJECT_EXTENDED_LIMIT_INFORMATION info;
 	::QueryInformationJobObject(m_hJob.get(), JobObjectExtendedLimitInformation, &info, sizeof(info), nullptr);
 	bool isExtendedLimit = true;
@@ -608,13 +614,35 @@ LRESULT CMainDlg::OnSetLimit(WORD, WORD wID, HWND, BOOL&) {
 			break;
 
 		case JobLimitType::ActiveProcesses:
-		{
-			CString text;
 			m_EditValue.GetWindowText(text);
 			info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
 			info.BasicLimitInformation.ActiveProcessLimit = _wtoi(text);
 			break;
-		}
+
+		case JobLimitType::Affinity:
+			m_EditValue.GetWindowText(text);
+			info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_AFFINITY;
+			info.BasicLimitInformation.Affinity = ParseNumber<ULONG_PTR>(text);
+			break;
+
+		case JobLimitType::JobMemory:
+			m_EditValue.GetWindowText(text);
+			info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_JOB_MEMORY;
+			info.JobMemoryLimit = ParseNumber<SIZE_T>(text) << m_UnitsCombo.GetItemData(m_UnitsCombo.GetCurSel());
+			break;
+
+		case JobLimitType::MaxWorkingSet:
+			m_EditValue.GetWindowText(text);
+			info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_WORKINGSET;
+			info.BasicLimitInformation.MinimumWorkingSetSize = 20 << 12;	// 20 pages minimum
+			info.BasicLimitInformation.MaximumWorkingSetSize = ParseNumber<SIZE_T>(text) << m_UnitsCombo.GetItemData(m_UnitsCombo.GetCurSel());
+			break;
+
+		case JobLimitType::ProcessMemory:
+			m_EditValue.GetWindowText(text);
+			info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+			info.ProcessMemoryLimit = ParseNumber<SIZE_T>(text) << m_UnitsCombo.GetItemData(m_UnitsCombo.GetCurSel());
+			break;
 
 		case JobLimitType::PriorityClass:
 			info.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_PRIORITY_CLASS;
@@ -643,7 +671,6 @@ LRESULT CMainDlg::OnSetLimit(WORD, WORD wID, HWND, BOOL&) {
 			return 0;
 	}
 
-	CString text;
 	m_LimitsCombo.GetLBText(m_LimitsCombo.GetCurSel(), text);
 
 	if(isExtendedLimit)

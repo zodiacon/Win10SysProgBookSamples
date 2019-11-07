@@ -87,6 +87,13 @@ private:
 	void AddDataItem(PCWSTR property, const CString& value);
 	static CString GetProcessName(DWORD pid);
 	static CString PriorityClassToString(int priority);
+	template<typename T>
+	static T ParseNumber(const CString& text) {
+		if (text.Left(2) == L"0x")
+			return (T)wcstoll(text.Mid(2), nullptr, 16);
+		return (T)_wtoll(text);
+	}
+
 	DWORD DoMonitorJob();
 
 	struct ProcessInfo {
@@ -103,7 +110,7 @@ private:
 		PriorityClass,
 		ProcessTime,
 		SchedulingClass,
-		WorkingSet,
+		MaxWorkingSet,
 		JobTime,
 		Affinity,
 		CpuRateControl,
