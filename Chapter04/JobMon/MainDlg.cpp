@@ -391,6 +391,7 @@ void CMainDlg::UpdateJobLimits() {
 			}
 		}
 	}
+	m_Limits.LockWindowUpdate(FALSE);
 }
 
 void CMainDlg::AddLimit(PCWSTR name) {
@@ -814,7 +815,9 @@ LRESULT CMainDlg::OnCreateProcess(WORD, WORD, HWND, BOOL&) {
 
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si = { sizeof(si) };
-	if (!::CreateProcess(nullptr, path.GetBuffer(), nullptr, nullptr, FALSE, CREATE_BREAKAWAY_FROM_JOB, nullptr, nullptr, &si, &pi)) {
+	if (!::CreateProcess(nullptr, path.GetBuffer(), nullptr, nullptr, FALSE, CREATE_BREAKAWAY_FROM_JOB, nullptr, nullptr, &si, &pi) &&
+		// if breakaway creation fails, it means some parent job prevents it. Try without a breakaway
+		!::CreateProcess(nullptr, path.GetBuffer(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
 		DisplayError(L"Failed to create process");
 		return 0;
 	}
