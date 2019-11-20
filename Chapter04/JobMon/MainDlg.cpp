@@ -483,7 +483,7 @@ DWORD CMainDlg::DoMonitorJob() {
 					break;
 
 				case JOB_OBJECT_MSG_END_OF_PROCESS_TIME:
-					AddLimit(L"Process " + std::to_wstring(PtrToUlong(data)) + L" has exceeded its time limit");
+					AddLog(L"Process " + std::to_wstring(PtrToUlong(data)) + L" has exceeded its time limit");
 					break;
 			}
 		}
@@ -541,6 +541,7 @@ LRESULT CMainDlg::OnOpenJob(WORD, WORD wID, HWND, BOOL&) {
 		}
 	}
 	UpdateUIForNewJob();
+	UpdateJob();
 
 	return 0;
 }

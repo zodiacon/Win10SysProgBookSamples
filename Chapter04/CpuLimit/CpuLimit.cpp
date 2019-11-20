@@ -54,5 +54,6 @@ int main(int argc, const char* argv[]) {
 	gets_s(dummy);
 
 	::CloseHandle(hJob);
+	return 0;
 }
 
