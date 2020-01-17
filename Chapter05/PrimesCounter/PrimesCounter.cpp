@@ -41,6 +41,9 @@ int main(int argc, const char* argv[]) {
 }
 
 bool IsPrime(int n) {
+	if (n < 3)
+		return false;
+
 	int limit = (int)::sqrt(n);
 	for (int i = 2; i <= limit; i++)
 		if (n % i == 0)
@@ -58,13 +61,13 @@ int CalcAllPrimes(int from, int to, int threads, DWORD& elapsed) {
 
 	for (int i = 0; i < threads; i++) {
 		auto& d = data[i];
-		d.From = i * chunk;
-		d.To = i == threads - 1 ? to : (i + 1) * chunk - 1;
+		d.From = i * chunk + from;
+		d.To = i == threads - 1 ? to : from + (i + 1) * chunk - 1;
 
 		DWORD tid;
 		handles[i] = ::CreateThread(nullptr, 0, CalcPrimes, &d, 0, &tid);
 		assert(handles[i]);
-		printf("Thread %d created. TID=%u\n", i + 1, tid);
+		printf("Thread %d created (%d to %d). TID=%u\n", i + 1, d.From, d.To, tid);
 	}
 	::WaitForMultipleObjects(threads, handles.get(), TRUE, INFINITE);
 	elapsed = static_cast<DWORD>(::GetTickCount64() - start);
@@ -84,7 +87,6 @@ int CalcAllPrimes(int from, int to, int threads, DWORD& elapsed) {
 
 DWORD WINAPI CalcPrimes(PVOID param) {
 	auto data = static_cast<PrimesData*>(param);
-	auto start = ::GetTickCount64();
 	int from = data->From, to = data->To;
 	int count = 0;
 	for (int i = from; i <= to; i++)
