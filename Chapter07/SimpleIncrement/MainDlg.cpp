@@ -127,10 +127,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	SetIcon(hIconSmall, FALSE);
 
 	m_AlgorithmCB.Attach(GetDlgItem(IDC_ALGORITHM));
-	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"Simple Increment"), (DWORD_PTR)Algorithm::Simple);
-	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"With Interlocked"), (DWORD_PTR)Algorithm::WithInterlocked);
-	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"With Critical Section"), (DWORD_PTR)Algorithm::WithCriticalSection);
-	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"With Mutex"), (DWORD_PTR)Algorithm::WithMutex);
+	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"None"), (DWORD_PTR)Algorithm::Simple);
+	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"Interlocked"), (DWORD_PTR)Algorithm::WithInterlocked);
+	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"Critical Section"), (DWORD_PTR)Algorithm::WithCriticalSection);
+	m_AlgorithmCB.SetItemData(m_AlgorithmCB.AddString(L"Mutex"), (DWORD_PTR)Algorithm::WithMutex);
 	m_AlgorithmCB.SetCurSel(0);
 
 	SetDlgItemInt(IDC_THREADS, 4);

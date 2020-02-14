@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29721.120
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrimesCounter", "PrimesCounter\PrimesCounter.vcxproj", "{06D275AD-AD6C-4C7F-8130-FEF9F2662535}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Debug|x64.ActiveCfg = Debug|x64
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Debug|x64.Build.0 = Debug|x64
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Debug|x86.ActiveCfg = Debug|Win32
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Debug|x86.Build.0 = Debug|Win32
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Release|x64.ActiveCfg = Release|x64
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Release|x64.Build.0 = Release|x64
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Release|x86.ActiveCfg = Release|Win32
+		{06D275AD-AD6C-4C7F-8130-FEF9F2662535}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {206B19E8-04B7-4E80-A7A5-4D2CE3A6B626}
+	EndGlobalSection
+EndGlobal

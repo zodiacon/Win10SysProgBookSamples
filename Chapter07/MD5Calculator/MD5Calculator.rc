@@ -46,12 +46,55 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear",                      ID_EDIT_CLEAR
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Calculate"
+    BEGIN
+        MENUITEM "&Go",                         ID_CALCULATE_GO
+        MENUITEM "&Stop",                       ID_CALCULATE_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "&Use Cache",                  ID_CALCULATE_USECACHE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About MD5 Calculator...",    ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Icon
 //
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\SimpleIncrement.ico"
+IDR_MAINFRAME           ICON                    "res\\MD5Calculator.ico"
+
+IDI_GO                  ICON                    "res\\go.ico"
+
+IDI_STOP                ICON                    "res\\stop.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,24 +102,14 @@ IDR_MAINFRAME           ICON                    "res\\SimpleIncrement.ico"
 // Dialog
 //
 
-IDD_MAINDLG DIALOGEX 0, 0, 236, 106
-STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
-CAPTION "Simple Increment"
+IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About MD5 Calculator"
 FONT 9, "Segoe UI", 0, 0, 0x0
 BEGIN
-    LTEXT           "Threads:",IDC_STATIC,7,9,26,8
-    EDITTEXT        IDC_THREADS,50,7,25,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Loops:",IDC_STATIC,87,9,21,8
-    EDITTEXT        IDC_LOOPS,112,7,67,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Synchronization:",IDC_STATIC,7,34,51,8
-    COMBOBOX        IDC_ALGORITHM,63,32,78,44,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "Run",IDC_RUN,169,31,60,14
-    LTEXT           "Total Count:",IDC_STATIC,7,63,38,8
-    EDITTEXT        IDC_TOTALCOUNT,51,60,78,14,ES_AUTOHSCROLL | ES_READONLY
-    LTEXT           "Elapsed time (msec):",IDC_STATIC,7,84,63,8
-    LTEXT           "0",IDC_ELAPSED,74,85,39,8
-    LTEXT           "Expetced:",IDC_STATIC,137,63,30,8
-    EDITTEXT        IDC_EXPECTED,169,60,60,14,ES_AUTOHSCROLL | ES_READONLY
+    DEFPUSHBUTTON   "OK",IDOK,68,81,50,14
+    CTEXT           "MD5 Calculator v1.0\n\n(C)2020 Pavel Yosifovich",IDC_STATIC,53,28,78,32
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,18,17
 END
 
 
@@ -88,12 +121,12 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_MAINDLG, DIALOG
+    IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 229
+        RIGHTMARGIN, 180
         TOPMARGIN, 7
-        BOTTOMMARGIN, 99
+        BOTTOMMARGIN, 95
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -145,12 +178,12 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "SimpleIncrement Module"
+            VALUE "FileDescription", "MD5Calculator Module"
             VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "SimpleIncrement"
+            VALUE "InternalName", "MD5Calculator"
             VALUE "LegalCopyright", "Copyright 2020"
-            VALUE "OriginalFilename", "SimpleIncrement.exe"
-            VALUE "ProductName", "SimpleIncrement Module"
+            VALUE "OriginalFilename", "MD5Calculator.exe"
+            VALUE "ProductName", "MD5Calculator Module"
             VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
@@ -166,7 +199,7 @@ END
 // AFX_DIALOG_LAYOUT
 //
 
-IDD_MAINDLG AFX_DIALOG_LAYOUT
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -179,7 +212,20 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Simple Increment"
+    IDR_MAINFRAME           "MD5Calculator"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
 STRINGTABLE
@@ -190,10 +236,39 @@ END
 
 STRINGTABLE
 BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
+    ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
+    ID_WINDOW_CASCADE       "Arrange windows so they overlap\nCascade Windows"
+    ID_WINDOW_TILE_HORZ     "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_TILE_VERT     "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
     ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
     ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
 STRINGTABLE
