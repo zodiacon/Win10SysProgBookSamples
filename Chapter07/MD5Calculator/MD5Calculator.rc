@@ -212,7 +212,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "MD5Calculator"
+    IDR_MAINFRAME           "MD5 Calculator"
 END
 
 STRINGTABLE

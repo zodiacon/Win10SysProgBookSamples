@@ -73,6 +73,7 @@ DWORD CView::DoCalc(int index) {
 		auto& data = m_Events[index];
 		data.CalcDone = true;
 		data.MD5Hash = hash;
+		data.Cached = false;
 		data.CalculatingThreadId = ::GetCurrentThreadId();
 		LARGE_INTEGER pcEnd;
 		::QueryPerformanceCounter(&pcEnd);
@@ -201,15 +202,15 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR hdr, BOOL&) {
 				::StringCchCopy(item.pszText, item.cchTextMax, GetProcessName(data.ProcessId));
 				break;
 
-			case 3:
+			case 3:	// file name
 				::StringCchCopy(item.pszText, item.cchTextMax, data.FileName);
 				break;
 
-			case 4:
+			case 4:	// hash
 				if (data.CalcDone) {
 					CString hash;
 					for (auto b : data.MD5Hash)
-						hash.Format(L"%s%02X", hash, b);
+						hash.Format(L"%s%02X", (PCWSTR)hash, b);
 					::StringCchCopy(item.pszText, item.cchTextMax, hash);
 				}
 				break;
@@ -226,7 +227,8 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR hdr, BOOL&) {
 				break;
 
 			case 7:
-				item.pszText = data.Cached ? L"Yes" : L"No";
+				if(data.CalcDone)
+					item.pszText = data.Cached ? L"Yes" : L"No";
 				break;
 		}
 	}

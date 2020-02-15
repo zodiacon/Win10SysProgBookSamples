@@ -16,11 +16,10 @@ bool HashCache::Add(PCWSTR path, const Hash& hash) {
 	return false;
 }
 
-const Hash& HashCache::Get(PCWSTR path) const {
-	static Hash empty;
+const Hash HashCache::Get(PCWSTR path) const {
 	AutoCriticalSection locker(_lock);
 	auto it = _cache.find(path);
-	return it == _cache.end() ? empty : it->second;
+	return it == _cache.end() ? Hash() : it->second;
 }
 
 bool HashCache::Remove(PCWSTR path) {

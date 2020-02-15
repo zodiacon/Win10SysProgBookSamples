@@ -9,7 +9,7 @@ public:
 	HashCache();
 
 	bool Add(PCWSTR path, const Hash& hash);
-	const Hash& Get(PCWSTR path) const;
+	const Hash Get(PCWSTR path) const;
 	bool Remove(PCWSTR path);
 	void Clear();
 
