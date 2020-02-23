@@ -24,6 +24,12 @@
     <ClInclude Include="CriticalSection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReaderWriterLock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoReaderWriterLock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ThreadingHelpers.cpp">
@@ -36,6 +42,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CriticalSection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReaderWriterLock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoReaderWriterLock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

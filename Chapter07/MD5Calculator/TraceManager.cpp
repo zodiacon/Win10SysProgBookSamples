@@ -1,19 +1,15 @@
 #include "stdafx.h"
 #include "TraceManager.h"
-#include "EventParser.h"
-
-TraceManager::TraceManager() {
-}
 
 TraceManager::~TraceManager() {
 	Stop();
 }
 
 bool TraceManager::Start(std::function<void(PEVENT_RECORD)> cb) {
-	_callback = cb;
-
-	if (_handle)
+	if (_handle || _hTrace)
 		return true;
+
+	_callback = cb;
 
 	auto size = sizeof(EVENT_TRACE_PROPERTIES) + sizeof(KERNEL_LOGGER_NAME);
 	_propertiesBuffer = std::make_unique<BYTE[]>(size);
@@ -65,13 +61,6 @@ bool TraceManager::Stop() {
 void TraceManager::OnEventRecord(PEVENT_RECORD rec) {
 	if (_callback)
 		_callback(rec);
-
-	//EventParser parser(rec);
-	//auto prop = parser.GetProperty(L"FileName");
-	//if (prop) {
-	//	auto path = prop->GetUnicodeString();
-	//	ATLTRACE(L"%s %s %s\n", prop->Name.c_str(), path, EventParser::GetDosNameFromNtName(path).c_str());
-	//}
 }
 
 DWORD TraceManager::Run() {

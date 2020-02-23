@@ -30,14 +30,13 @@ void CView::OnEvent(PEVENT_RECORD record) {
 		data.ProcessId = parser.GetProcessId();
 		data.Time = parser.GetEventHeader().TimeStamp.QuadPart;
 		data.CalcDone = false;
-		int index;
 		size_t size;
 		{
 			AutoCriticalSection locker(m_EventsLock);
 			m_Events.push_back(std::move(data));
 			size = m_Events.size();
 		}
-		index = static_cast<int>(size - 1);
+		int index = static_cast<int>(size - 1);
 
 		// initiate work from the UI thread
 
@@ -83,7 +82,6 @@ DWORD CView::DoCalc(int index) {
 		m_Cache.Add(data.FileName, hash);
 
 	::SetThreadPriority(::GetCurrentThread(), THREAD_MODE_BACKGROUND_END);
-
 
 	SendMessage(LVM_REDRAWITEMS, index, index);
 	return 0;

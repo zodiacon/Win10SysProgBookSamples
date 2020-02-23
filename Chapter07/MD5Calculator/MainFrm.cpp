@@ -148,6 +148,7 @@ LRESULT CMainFrame::OnStartTrace(WORD, WORD, HWND, BOOL&) {
 	UIEnable(ID_CALCULATE_GO, false);
 	UIEnable(ID_CALCULATE_STOP, true);
 	UIEnable(ID_EDIT_CLEAR, false);
+	UIEnable(ID_CALCULATE_USECACHE, false);
 
 	return 0;
 }
@@ -157,6 +158,7 @@ LRESULT CMainFrame::OnStopTrace(WORD, WORD, HWND, BOOL&) {
 	UIEnable(ID_CALCULATE_GO, true);
 	UIEnable(ID_CALCULATE_STOP, false);
 	UIEnable(ID_EDIT_CLEAR, true);
+	UIEnable(ID_CALCULATE_USECACHE, true);
 
 	return 0;
 }

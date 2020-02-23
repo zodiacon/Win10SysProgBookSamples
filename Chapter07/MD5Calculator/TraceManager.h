@@ -2,7 +2,6 @@
 
 class TraceManager final {
 public:
-	TraceManager();
 	~TraceManager();
 
 	bool Start(std::function<void(PEVENT_RECORD)> callback);

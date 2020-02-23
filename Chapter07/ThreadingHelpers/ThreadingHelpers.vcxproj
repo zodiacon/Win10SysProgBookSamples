@@ -150,11 +150,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AutoCriticalSection.h" />
+    <ClInclude Include="AutoReaderWriterLock.h" />
     <ClInclude Include="CriticalSection.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ReaderWriterLock.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoCriticalSection.cpp" />
+    <ClCompile Include="AutoReaderWriterLock.cpp" />
     <ClCompile Include="CriticalSection.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -162,6 +165,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ReaderWriterLock.cpp" />
     <ClCompile Include="ThreadingHelpers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
