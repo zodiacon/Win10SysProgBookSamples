@@ -6,7 +6,7 @@
 #include "resource.h"
 #include "EventParser.h"
 #include "View.h"
-#include "..\ThreadingHelpers\AutoCriticalSection.h"
+#include "..\ThreadingHelpers\AutoReaderWriterLock.h"
 #include "..\HashCalc\MD5Calculator.h"
 
 BOOL CView::PreTranslateMessage(MSG* pMsg) {
@@ -32,7 +32,7 @@ void CView::OnEvent(PEVENT_RECORD record) {
 		data.CalcDone = false;
 		size_t size;
 		{
-			AutoCriticalSection locker(m_EventsLock);
+			AutoReaderWriterLockExclusive locker(m_EventsLock);
 			m_Events.push_back(std::move(data));
 			size = m_Events.size();
 		}
@@ -45,7 +45,7 @@ void CView::OnEvent(PEVENT_RECORD record) {
 }
 
 void CView::Clear() {
-	AutoCriticalSection locker(m_EventsLock);
+	AutoReaderWriterLockExclusive locker(m_EventsLock);
 	m_Events.clear();
 	SetItemCount(0);
 }
@@ -61,14 +61,14 @@ DWORD CView::DoCalc(int index) {
 	EventData data;
 	{
 		// get data item
-		AutoCriticalSection locker(m_EventsLock);
+		AutoReaderWriterLockShared locker(m_EventsLock);
 		data = m_Events[index];
 	}
 
 	::SetThreadPriority(::GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN);
 	auto hash = MD5Calculator::Calculate(data.FileName);
 	{
-		AutoCriticalSection locker(m_EventsLock);
+		AutoReaderWriterLockShared locker(m_EventsLock);
 		auto& data = m_Events[index];
 		data.CalcDone = true;
 		data.MD5Hash = hash;
@@ -135,7 +135,7 @@ LRESULT CView::OnStartCalc(UINT, WPARAM index, LPARAM size, BOOL&) {
 	if (m_UseCache) {
 		Hash hash;
 		{
-			AutoCriticalSection lokcer(m_EventsLock);
+			AutoReaderWriterLockShared lokcer(m_EventsLock);
 			auto& data = m_Events[index];
 			hash = m_Cache.Get(data.FileName);
 			if (!hash.empty()) {
@@ -155,7 +155,7 @@ LRESULT CView::OnStartCalc(UINT, WPARAM index, LPARAM size, BOOL&) {
 	auto data = new CalcThreadData;
 	data->View = this;
 	data->Index = (int)index;
-	
+
 	auto hThread = ::CreateThread(nullptr, 0, [](auto param) {
 		auto data = (CalcThreadData*)param;
 		auto view = data->View;
@@ -180,52 +180,52 @@ LRESULT CView::OnGetDispInfo(int, LPNMHDR hdr, BOOL&) {
 	auto col = item.iSubItem;
 	EventData data;
 	{
-		AutoCriticalSection locker(m_EventsLock);
+		AutoReaderWriterLockShared locker(m_EventsLock);
 		data = m_Events[index];
 	}
 
 	if (di->item.mask & LVIF_TEXT) {
 		switch (col) {
-			case 0:	// time
-				::StringCchCopy(item.pszText, item.cchTextMax, FormatTime(data.Time));
-				break;
+		case 0:	// time
+			::StringCchCopy(item.pszText, item.cchTextMax, FormatTime(data.Time));
+			break;
 
-			case 1:	// PID
-				::StringCchPrintf(item.pszText, item.cchTextMax, L"%d", data.ProcessId);
-				break;
+		case 1:	// PID
+			::StringCchPrintf(item.pszText, item.cchTextMax, L"%d", data.ProcessId);
+			break;
 
-			case 2: // process name
-				::StringCchCopy(item.pszText, item.cchTextMax, GetProcessName(data.ProcessId));
-				break;
+		case 2: // process name
+			::StringCchCopy(item.pszText, item.cchTextMax, GetProcessName(data.ProcessId));
+			break;
 
-			case 3:	// file name
-				::StringCchCopy(item.pszText, item.cchTextMax, data.FileName);
-				break;
+		case 3:	// file name
+			::StringCchCopy(item.pszText, item.cchTextMax, data.FileName);
+			break;
 
-			case 4:	// hash
-				if (data.CalcDone) {
-					CString hash;
-					for (auto b : data.MD5Hash)
-						hash.Format(L"%s%02X", (PCWSTR)hash, b);
-					::StringCchCopy(item.pszText, item.cchTextMax, hash);
-				}
-				break;
+		case 4:	// hash
+			if (data.CalcDone) {
+				CString hash;
+				for (auto b : data.MD5Hash)
+					hash.Format(L"%s%02X", (PCWSTR)hash, b);
+				::StringCchCopy(item.pszText, item.cchTextMax, hash);
+			}
+			break;
 
-			case 5:
-				if (data.CalcDone && !data.Cached) {
-					::StringCchPrintf(item.pszText, item.cchTextMax, L"%d", data.CalculatingThreadId);
-				}
-				break;
+		case 5:
+			if (data.CalcDone && !data.Cached) {
+				::StringCchPrintf(item.pszText, item.cchTextMax, L"%d", data.CalculatingThreadId);
+			}
+			break;
 
-			case 6:
-				if (data.CalcDone && data.CalculatingThreadId)
-					::StringCchPrintf(item.pszText, item.cchTextMax, L"%d usec", data.CalculationTime);
-				break;
+		case 6:
+			if (data.CalcDone && data.CalculatingThreadId)
+				::StringCchPrintf(item.pszText, item.cchTextMax, L"%d usec", data.CalculationTime);
+			break;
 
-			case 7:
-				if(data.CalcDone)
-					item.pszText = data.Cached ? L"Yes" : L"No";
-				break;
+		case 7:
+			if (data.CalcDone)
+				item.pszText = data.Cached ? L"Yes" : L"No";
+			break;
 		}
 	}
 	return 0;

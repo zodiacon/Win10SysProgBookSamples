@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadingHelpers", "Threadi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MD5Calculator", "MD5Calculator\MD5Calculator.vcxproj", "{6E077CE8-21C9-4921-B388-CB20B108F665}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MD5Calculator2", "MD5Calculator2\MD5Calculator2.vcxproj", "{B02A3B5F-F108-4C18-B721-8529B7A379E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{6E077CE8-21C9-4921-B388-CB20B108F665}.Release|x64.Build.0 = Release|x64
 		{6E077CE8-21C9-4921-B388-CB20B108F665}.Release|x86.ActiveCfg = Release|Win32
 		{6E077CE8-21C9-4921-B388-CB20B108F665}.Release|x86.Build.0 = Release|Win32
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Debug|x64.ActiveCfg = Debug|x64
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Debug|x64.Build.0 = Debug|x64
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Debug|x86.Build.0 = Debug|Win32
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Release|x64.ActiveCfg = Release|x64
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Release|x64.Build.0 = Release|x64
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Release|x86.ActiveCfg = Release|Win32
+		{B02A3B5F-F108-4C18-B721-8529B7A379E4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
