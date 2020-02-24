@@ -154,6 +154,7 @@
     <ClInclude Include="CriticalSection.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReaderWriterLock.h" />
+    <ClInclude Include="ThreadSafeQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoCriticalSection.cpp" />
@@ -167,6 +168,7 @@
     </ClCompile>
     <ClCompile Include="ReaderWriterLock.cpp" />
     <ClCompile Include="ThreadingHelpers.cpp" />
+    <ClCompile Include="ThreadSafeQueue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
