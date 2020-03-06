@@ -84,7 +84,7 @@ void CMainDlg::DoMutexCount() {
 	::WaitForMultipleObjects(m_Threads, handles.get(), TRUE, INFINITE);
 	for (int i = 0; i < m_Threads; i++)
 		::CloseHandle(handles[i]);
-	::CloseHandle(&m_hMutex);
+	::CloseHandle(m_hMutex);
 }
 
 DWORD CMainDlg::IncInterlockedThread() {

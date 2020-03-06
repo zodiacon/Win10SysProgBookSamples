@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29827.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MutexDemo", "MutexDemo\MutexDemo.vcxproj", "{91A9D2D8-CFD1-49FE-BACD-939D349C921C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Debug|x64.ActiveCfg = Debug|x64
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Debug|x64.Build.0 = Debug|x64
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Debug|x86.ActiveCfg = Debug|Win32
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Debug|x86.Build.0 = Debug|Win32
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Release|x64.ActiveCfg = Release|x64
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Release|x64.Build.0 = Release|x64
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Release|x86.ActiveCfg = Release|Win32
+		{91A9D2D8-CFD1-49FE-BACD-939D349C921C}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FCAB98A-5FF9-4277-8D90-D2A06275067D}
+	EndGlobalSection
+EndGlobal
