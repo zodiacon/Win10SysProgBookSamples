@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QueueDemo", "QueueDemo\Queu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadingHelpers", "ThreadingHelpers\ThreadingHelpers.vcxproj", "{D295745B-16F0-4005-A2D2-DC2EF03104E3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleTimer", "SimpleTimer\SimpleTimer.vcxproj", "{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{D295745B-16F0-4005-A2D2-DC2EF03104E3}.Release|x64.Build.0 = Release|x64
 		{D295745B-16F0-4005-A2D2-DC2EF03104E3}.Release|x86.ActiveCfg = Release|Win32
 		{D295745B-16F0-4005-A2D2-DC2EF03104E3}.Release|x86.Build.0 = Release|Win32
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Debug|x64.ActiveCfg = Debug|x64
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Debug|x64.Build.0 = Debug|x64
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Debug|x86.ActiveCfg = Debug|Win32
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Debug|x86.Build.0 = Debug|Win32
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Release|x64.ActiveCfg = Release|x64
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Release|x64.Build.0 = Release|x64
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Release|x86.ActiveCfg = Release|Win32
+		{5790042F-E786-4EBC-B7AD-B1A21E06FFDF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
