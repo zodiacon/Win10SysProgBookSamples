@@ -26,7 +26,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	auto psid = reinterpret_cast<PSID>(sid);
 	DWORD sidLen;
 	if (!::CreateWellKnownSid(WinBuiltinUsersSid, nullptr, psid, &sidLen))
-		ReportError(L"Failed to create SID");
+		return ReportError(L"Failed to create SID");
 
 	if (!::AddSIDToBoundaryDescriptor(&m_hBD, psid))
 		return ReportError(L"Failed to add SID to Boundary Descriptor");
