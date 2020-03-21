@@ -46,12 +46,55 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear",                      ID_EDIT_CLEAR
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Calculate"
+    BEGIN
+        MENUITEM "&Go",                         ID_CALCULATE_GO
+        MENUITEM "&Stop",                       ID_CALCULATE_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "&Use Cache",                  ID_CALCULATE_USECACHE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About MD5 Calculator...",    ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Icon
 //
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\SimpleWork.ico"
+IDR_MAINFRAME           ICON                    "res\\MD5Calculator.ico"
+
+IDI_GO                  ICON                    "res\\go.ico"
+
+IDI_STOP                ICON                    "res\\stop.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,17 +102,14 @@ IDR_MAINFRAME           ICON                    "res\\SimpleWork.ico"
 // Dialog
 //
 
-IDD_MAINDLG DIALOGEX 0, 0, 234, 120
-STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
-CAPTION "Simple Work"
+IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About MD5 Calculator"
 FONT 9, "Segoe UI", 0, 0, 0x0
 BEGIN
-    LISTBOX         IDC_WORKITEMS,102,12,126,102,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Submit Work Item",IDC_SUBMIT,6,6,78,14
-    PUSHBUTTON      "Submit 10 Work Items",IDC_SUBMIT10,6,30,78,14
-    LTEXT           "Work items:",IDC_STATIC,104,3,37,8
-    PUSHBUTTON      "Clear",IDC_CLEAR,36,96,50,14
-    LTEXT           "Threads:",IDC_THREADS,6,54,60,8
+    DEFPUSHBUTTON   "OK",IDOK,68,81,50,14
+    CTEXT           "MD5 Calculator v1.0\n\n(C)2020 Pavel Yosifovich",IDC_STATIC,53,28,78,32
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,18,17
 END
 
 
@@ -81,12 +121,12 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_MAINDLG, DIALOG
+    IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 227
+        RIGHTMARGIN, 180
         TOPMARGIN, 7
-        BOTTOMMARGIN, 113
+        BOTTOMMARGIN, 95
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -138,12 +178,12 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "SimpleWork Module"
+            VALUE "FileDescription", "MD5Calculator Module"
             VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "SimpleWork"
+            VALUE "InternalName", "MD5Calculator"
             VALUE "LegalCopyright", "Copyright 2020"
-            VALUE "OriginalFilename", "SimpleWork.exe"
-            VALUE "ProductName", "SimpleWork Module"
+            VALUE "OriginalFilename", "MD5Calculator.exe"
+            VALUE "ProductName", "MD5Calculator Module"
             VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
@@ -159,7 +199,7 @@ END
 // AFX_DIALOG_LAYOUT
 //
 
-IDD_MAINDLG AFX_DIALOG_LAYOUT
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -172,7 +212,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Simple Work"
+    IDR_MAINFRAME           "MD5 Calculator"
 END
 
 STRINGTABLE
@@ -223,6 +263,12 @@ BEGIN
     ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
     ID_EDIT_UNDO            "Undo the last action\nUndo"
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
 STRINGTABLE

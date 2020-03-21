@@ -151,24 +151,35 @@ LRESULT CView::OnStartCalc(UINT, WPARAM index, LPARAM size, BOOL&) {
 		}
 	}
 
-	// spawn a thread to do the actual calculation
 	auto data = new CalcThreadData;
 	data->View = this;
 	data->Index = (int)index;
 
-	auto hThread = ::CreateThread(nullptr, 0, [](auto param) {
+	// options 1: use TrySubmitThreadpoolCallback
+	//if (!::TrySubmitThreadpoolCallback([](auto instance, auto param) {
+	//	auto data = (CalcThreadData*)param;
+	//	auto view = data->View;
+	//	auto index = data->Index;
+	//	delete data;
+	//	view->DoCalc(index);
+	//	}, data, nullptr)) {
+	//	AtlMessageBox(nullptr, L"Failed to submit thread pool work!", IDR_MAINFRAME, MB_ICONERROR);
+	//	return 0;
+	//}
+
+	// option 2: use a manually created work item
+	wil::unique_threadpool_work_nowait work(::CreateThreadpoolWork([](auto instance, auto param, auto work) {
 		auto data = (CalcThreadData*)param;
 		auto view = data->View;
 		auto index = data->Index;
 		delete data;
-		return view->DoCalc(index);
-		}, data, 0, nullptr);
-	if (!hThread) {
-		AtlMessageBox(nullptr, L"Failed to create worker thread!", IDR_MAINFRAME, MB_ICONERROR);
+		view->DoCalc(index);
+		}, data, nullptr));
+	if(!work) {
+		AtlMessageBox(nullptr, L"Failed to submit thread pool work!", IDR_MAINFRAME, MB_ICONERROR);
 		return 0;
 	}
-
-	::CloseHandle(hThread);
+	::SubmitThreadpoolWork(work.get());
 
 	return 0;
 }

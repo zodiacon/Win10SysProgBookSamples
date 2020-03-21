@@ -7,7 +7,7 @@
 
 #include "MainDlg.h"
 
-void CMainDlg::OnCallback(PTP_CALLBACK_INSTANCE instance, PVOID context) {
+void CMainDlg::OnCallback(PTP_CALLBACK_INSTANCE instance, PVOID context, PTP_WORK work) {
 	auto dlg = (CMainDlg*)context;
 
 	// post message indicating start
@@ -31,6 +31,13 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	SetIcon(hIcon, TRUE);
 	HICON hIconSmall = AtlLoadIconImage(IDR_MAINFRAME, 0, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
 	SetIcon(hIconSmall, FALSE);
+
+	m_Work = ::CreateThreadpoolWork(OnCallback, this, nullptr);
+	if (!m_Work) {
+		AtlMessageBox(*this, L"Failed to create thread pool work", IDR_MAINFRAME, MB_ICONERROR);
+		EndDialog(IDCANCEL);
+		return 0;
+	}
 
 	SetTimer(1, 2000, nullptr);
 
@@ -68,6 +75,10 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
 	return 0;
 }
 
+LRESULT CMainDlg::OnDestroy(UINT, WPARAM, LPARAM, BOOL&) {
+	return LRESULT();
+}
+
 LRESULT CMainDlg::OnCallbackStart(UINT, WPARAM wParam, LPARAM, BOOL&) {
 	CString text;
 	text.Format(L"Started on thread %d", wParam);
@@ -90,20 +101,14 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 }
 
 LRESULT CMainDlg::OnSubmitWorkItem(WORD, WORD wID, HWND, BOOL&) {
-	if(!::TrySubmitThreadpoolCallback(OnCallback, this, nullptr))
-		AtlMessageBox(*this, L"Failed to submit work item callback", 
-			IDR_MAINFRAME, MB_ICONERROR);
+	::SubmitThreadpoolWork(m_Work);
 
 	return 0;
 }
 
 LRESULT CMainDlg::OnSubmit10WorkItems(WORD, WORD, HWND, BOOL&) {
 	for (int i = 0; i < 10; i++) {
-		if (!::TrySubmitThreadpoolCallback(OnCallback, this, nullptr)) {
-			AtlMessageBox(*this, L"Failed to submit work item callback", 
-				IDR_MAINFRAME, MB_ICONERROR);
-			break;
-		}
+		::SubmitThreadpoolWork(m_Work);
 	}
 	return 0;
 }
