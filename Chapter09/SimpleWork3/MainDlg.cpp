@@ -32,7 +32,23 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	HICON hIconSmall = AtlLoadIconImage(IDR_MAINFRAME, 0, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
 	SetIcon(hIconSmall, FALSE);
 
-	m_Work = ::CreateThreadpoolWork(OnCallback, this, nullptr);
+	m_ThreadPool = ::CreateThreadpool(nullptr);
+	if (!m_ThreadPool) {
+		AtlMessageBox(*this, L"Failed to create thread pool", IDR_MAINFRAME, MB_ICONERROR);
+		EndDialog(IDCANCEL);
+		return 0;
+	}
+	::SetThreadpoolThreadMaximum(m_ThreadPool, 256);
+	::SetThreadpoolThreadMinimum(m_ThreadPool, ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
+	TP_POOL_STACK_INFORMATION stackInfo;
+	stackInfo.StackCommit = 1 << 13;		// 8 KB
+	stackInfo.StackReserve = 1 << 14;		// 16 KB
+	::SetThreadpoolStackInformation(m_ThreadPool, &stackInfo);
+	
+	::InitializeThreadpoolEnvironment(&m_CbEnv);
+	::SetThreadpoolCallbackPool(&m_CbEnv, m_ThreadPool);
+
+	m_Work = ::CreateThreadpoolWork(OnCallback, this, &m_CbEnv);
 	if (!m_Work) {
 		AtlMessageBox(*this, L"Failed to create thread pool work", IDR_MAINFRAME, MB_ICONERROR);
 		EndDialog(IDCANCEL);
@@ -76,7 +92,9 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
 }
 
 LRESULT CMainDlg::OnDestroy(UINT, WPARAM, LPARAM, BOOL&) {
+	::CloseThreadpool(m_ThreadPool);
 	::CloseThreadpoolWork(m_Work);
+
 	return 0;
 }
 
