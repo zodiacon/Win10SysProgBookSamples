@@ -22,9 +22,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_Images.Create(16, 16, ILC_COLOR32, 32, 16);
 	m_ProcCombo.SetImageList(m_Images);
 
-	auto comLib = ::GetModuleHandle(L"combase");
-	if (!comLib)
-		::GetModuleHandle(L"ole32");
+	((CButton)GetDlgItem(IDC_REFRESH)).SetIcon(AtlLoadIconImage(IDI_REFRESH, 0, 16, 16));
+
+	auto comLib = ::GetModuleHandle(L"ole32");
 	if (comLib) {
 		::RegisterWaitChainCOMCallback(
 			(PCOGETCALLSTATE)::GetProcAddress(comLib, "CoGetCallState"),
@@ -42,6 +42,12 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
 }
 
 LRESULT CMainDlg::OnDetect(WORD, WORD wID, HWND, BOOL&) {
+	auto hWct = ::OpenThreadWaitChainSession(0, nullptr);
+	if (hWct == nullptr) {
+		AtlMessageBox(*this, L"Failed to open WCT session", IDR_MAINFRAME, MB_ICONERROR);
+		return 0;
+	}
+
 	auto pid = (DWORD)m_ProcCombo.GetItemData(m_ProcCombo.GetCurSel());
 	auto threads = EnumThreads(pid);
 
@@ -49,13 +55,20 @@ LRESULT CMainDlg::OnDetect(WORD, WORD wID, HWND, BOOL&) {
 
 	int failures = 0;
 	for (auto& tid : threads) {
-		if (!DoWaitChain(tid))
+		if (!DoWaitChain(hWct, tid))
 			failures++;
 	}
 	if (failures == threads.size()) {
 		AtlMessageBox(*this, L"Failed to analyze wait chain. (try running elevated)", 
 			IDR_MAINFRAME, MB_ICONEXCLAMATION);
+	
 	}
+	::CloseThreadWaitChainSession(hWct);
+	return 0;
+}
+
+LRESULT CMainDlg::OnRefresh(WORD, WORD wID, HWND, BOOL&) {
+	InitProcessesCombo();
 	return 0;
 }
 
@@ -134,11 +147,7 @@ std::vector<DWORD> CMainDlg::EnumThreads(DWORD pid) {
 	return threads;
 }
 
-bool CMainDlg::DoWaitChain(DWORD tid) {
-	auto hWct = ::OpenThreadWaitChainSession(0, nullptr);
-	if(hWct == nullptr)
-		return false;
-
+bool CMainDlg::DoWaitChain(HWCT hWct, DWORD tid) {
 	WAITCHAIN_NODE_INFO nodes[WCT_MAX_NODE_COUNT];
 	DWORD nodeCount = WCT_MAX_NODE_COUNT;
 	BOOL cycle;
@@ -146,14 +155,10 @@ bool CMainDlg::DoWaitChain(DWORD tid) {
 	if(success) {
 		ParseThreadNodes(nodes, nodeCount, cycle);
 	}
-	::CloseThreadWaitChainSession(hWct);
 	return success;
 }
 
 void CMainDlg::ParseThreadNodes(const WAITCHAIN_NODE_INFO* nodes, DWORD count, bool cycle) {
-	HTREEITEM hCurrentNode = TVI_ROOT;
-	CString text;
-
 	static PCWSTR objectTypes[] = {
 		L"Critical Section",
 		L"Send Message",
@@ -181,6 +186,9 @@ void CMainDlg::ParseThreadNodes(const WAITCHAIN_NODE_INFO* nodes, DWORD count, b
 		L"Unknown",
 		L"Error"
 	};
+
+	HTREEITEM hCurrentNode = TVI_ROOT;
+	CString text;
 
 	for (DWORD i = 0; i < count; i++) {
 		auto& node = nodes[i];

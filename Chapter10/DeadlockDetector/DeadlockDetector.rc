@@ -53,6 +53,8 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\DeadlockDetector.ico"
 
+IDI_REFRESH             ICON                    "res\\refresh.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -64,10 +66,11 @@ STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
 CAPTION "Deadlock Detector"
 FONT 9, "Segoe UI", 0, 0, 0x0
 BEGIN
-    LTEXT           "Processes:",IDC_STATIC,5,7,32,8
-    CONTROL         "",IDC_PROCESSES,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,42,5,162,151
-    PUSHBUTTON      "Detect Deadlocks",IDC_DETECT,210,4,78,14
+    LTEXT           "Processes:",IDC_STATIC,4,7,32,8
+    CONTROL         "",IDC_PROCESSES,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,42,5,150,151
+    PUSHBUTTON      "Detect Deadlocks",IDC_DETECT,222,4,66,14
     CONTROL         "",IDC_CHAINS,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_HSCROLL | WS_TABSTOP,6,24,282,150
+    PUSHBUTTON      "Refresh",IDC_REFRESH,198,4,18,14,BS_ICON
 END
 
 

@@ -217,6 +217,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\DeadlockDetector.ico" />
+    <Image Include="res\refresh.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
