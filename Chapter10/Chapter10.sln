@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Inc", "Inc", "{607B61F8-855
 		Inc\Matrix.h = Inc\Matrix.h
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeadlockDetector", "DeadlockDetector\DeadlockDetector.vcxproj", "{F42868B4-650A-4E65-9483-F0EF92E66EF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -56,6 +58,14 @@ Global
 		{29D80A79-73C6-4C12-B694-89F554235E91}.Release|x64.Build.0 = Release|x64
 		{29D80A79-73C6-4C12-B694-89F554235E91}.Release|x86.ActiveCfg = Release|Win32
 		{29D80A79-73C6-4C12-B694-89F554235E91}.Release|x86.Build.0 = Release|Win32
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Debug|x64.ActiveCfg = Debug|x64
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Debug|x64.Build.0 = Debug|x64
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Debug|x86.ActiveCfg = Debug|Win32
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Debug|x86.Build.0 = Debug|Win32
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Release|x64.ActiveCfg = Release|x64
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Release|x64.Build.0 = Release|x64
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Release|x86.ActiveCfg = Release|Win32
+		{F42868B4-650A-4E65-9483-F0EF92E66EF4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
