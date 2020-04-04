@@ -112,6 +112,8 @@ LRESULT CMainDlg::OnAddFiles(WORD, WORD wID, HWND, BOOL&) {
 		} while (dlg.GetNextPathName(path));
 		m_List.EnsureVisible(m_List.GetItemCount() - 1, FALSE);
 		UpdateButtons();
+		if (errors > 0)
+			AtlMessageBox(*this, L"Some files failed to open", IDR_MAINFRAME, MB_ICONEXCLAMATION);
 	}
 	return 0;
 }
@@ -199,7 +201,7 @@ LRESULT CMainDlg::OnProgressStart(UINT, WPARAM wParam, LPARAM, BOOL&) {
 
 LRESULT CMainDlg::OnDone(UINT, WPARAM, LPARAM, BOOL&) {
 	m_Running = false;
-	AtlMessageBox(*this, L"All done!", IDR_MAINFRAME);
+	AtlMessageBox(*this, L"All done!", IDR_MAINFRAME, MB_ICONINFORMATION);
 	m_Progress.SetPos(0);
 	UpdateButtons();
 
@@ -224,9 +226,7 @@ DWORD CMainDlg::WorkerThread() {
 		return 0;
 	}
 
-	int maxOperations = ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS) * 2;
-
-	const int chunkSize = 1 << 16;
+	const int chunkSize = 1 << 16;	// 64 KB
 
 	LONGLONG count = 0;
 	for (auto& data : m_Data) {
