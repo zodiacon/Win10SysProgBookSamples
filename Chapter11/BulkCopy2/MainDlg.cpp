@@ -67,11 +67,7 @@ LRESULT CMainDlg::OnGo(WORD, WORD wID, HWND, BOOL&) {
 		m_Data.push_back(std::move(data));
 	}
 
-	// create a worker thread
-	auto hThread = ::CreateThread(nullptr, 0, [](auto param) {
-		return ((CMainDlg*)param)->WorkerThread();
-		}, this, 0, nullptr);
-	::CloseHandle(hThread);
+	StartCopy();
 
 	m_Progress.SetPos(0);
 	m_Running = true;
@@ -201,6 +197,8 @@ LRESULT CMainDlg::OnProgressStart(UINT, WPARAM wParam, LPARAM, BOOL&) {
 }
 
 LRESULT CMainDlg::OnDone(UINT, WPARAM, LPARAM, BOOL&) {
+	m_Data.clear();
+
 	m_Running = false;
 	AtlMessageBox(*this, L"All done!", IDR_MAINFRAME, MB_ICONINFORMATION);
 	m_Progress.SetPos(0);
@@ -219,17 +217,9 @@ void CMainDlg::UpdateButtons() {
 	GetDlgItem(IDC_ADDDIR).EnableWindow(!m_Running);
 }
 
-DWORD CMainDlg::WorkerThread() {
-	wil::unique_handle hCP(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 0));
-	ATLASSERT(hCP);
-	if (!hCP) {
-		PostMessage(WM_ERROR, ::GetLastError());
-		return 0;
-	}
+void CMainDlg::StartCopy() {
+	m_OperationCount = 0;
 
-	const int chunkSize = 1 << 16;	// 64 KB
-
-	LONGLONG count = 0;
 	for (auto& data : m_Data) {
 		// open source file for async I/O
 		wil::unique_handle hSrc(::CreateFile(data.Src, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
@@ -253,9 +243,8 @@ DWORD CMainDlg::WorkerThread() {
 		::SetFilePointerEx(hDst.get(), size, nullptr, FILE_BEGIN);
 		::SetEndOfFile(hDst.get());
 
-		// associate both files with the completion port
-		ATLVERIFY(hCP.get() == ::CreateIoCompletionPort(hSrc.get(), hCP.get(), (ULONG_PTR)Key::Read, 0));
-		ATLVERIFY(hCP.get() == ::CreateIoCompletionPort(hDst.get(), hCP.get(), (ULONG_PTR)Key::Write, 0));
+		data.tpDst.reset(::CreateThreadpoolIo(hDst.get(), WriteCallback, this, nullptr));
+		data.tpSrc.reset(::CreateThreadpoolIo(hSrc.get(), ReadCallback, data.tpDst.get(), nullptr));
 
 		data.hSrc = std::move(hSrc);
 		data.hDst = std::move(hDst);
@@ -267,68 +256,13 @@ DWORD CMainDlg::WorkerThread() {
 		io->hSrc = data.hSrc.get();
 		io->hDst = data.hDst.get();
 		::ZeroMemory(io, sizeof(OVERLAPPED));
+		::StartThreadpoolIo(data.tpSrc.get());
 		auto ok = ::ReadFile(io->hSrc, io->Buffer.get(), chunkSize, nullptr, io);
 		ATLASSERT(!ok && ::GetLastError() == ERROR_IO_PENDING);
-		count += (size.QuadPart + chunkSize - 1) / chunkSize;
+		::InterlockedAdd64(&m_OperationCount, (size.QuadPart + chunkSize - 1) / chunkSize);
 	}
 
-	PostMessage(WM_PROGRESS_START, count);
-
-	while (count > 0) {
-		DWORD transferred;
-		ULONG_PTR key;
-		OVERLAPPED* ov;
-		BOOL ok = ::GetQueuedCompletionStatus(hCP.get(), &transferred, &key, &ov, INFINITE);
-		if (!ok) {
-			PostMessage(WM_ERROR, ::GetLastError());
-			count--;
-			delete ov;
-			continue;
-		}
-
-		// get actual data object
-		auto io = static_cast<IOData*>(ov);
-
-		if (key == (DWORD_PTR)Key::Read) {
-			// check if need another read
-			ULARGE_INTEGER offset = { io->Offset, io->OffsetHigh };
-			offset.QuadPart += chunkSize;
-			if (offset.QuadPart < io->Size) {
-				auto newio = new IOData;
-				newio->Size = io->Size;
-				newio->Buffer = std::make_unique<BYTE[]>(chunkSize);
-				newio->hSrc = io->hSrc;
-				newio->hDst = io->hDst;
-				::ZeroMemory(newio, sizeof(OVERLAPPED));
-				newio->Offset = offset.LowPart;
-				newio->OffsetHigh = offset.HighPart;
-				auto ok = ::ReadFile(newio->hSrc, newio->Buffer.get(), chunkSize, nullptr, newio);
-				auto error = ::GetLastError();
-				ATLASSERT(!ok && error == ERROR_IO_PENDING);
-			}
-
-			// read done, initiate write to the same offset in the target file
-			// offset is the same, just a different file
-			io->Internal = io->InternalHigh = 0;
-			ok = ::WriteFile(io->hDst, io->Buffer.get(), transferred, nullptr, ov);
-			auto error = ::GetLastError();
-			ATLASSERT(!ok && error == ERROR_IO_PENDING);
-
-		}
-		else {
-			// write operation complete
-			count--;
-			delete io;
-			PostMessage(WM_PROGRESS);
-		}
-	}
-
-	PostMessage(WM_DONE);
-
-	// close all handles
-	m_Data.clear();
-
-	return 0;
+	PostMessage(WM_PROGRESS_START, (WPARAM)m_OperationCount);
 }
 
 CString CMainDlg::FormatSize(LONGLONG size) {
@@ -342,4 +276,46 @@ CString CMainDlg::FormatSize(LONGLONG size) {
 	else
 		text.Format(L"%u GB", size >> 30);
 	return text;
+}
+
+void CMainDlg::ReadCallback(PTP_CALLBACK_INSTANCE Instance, PVOID Context, PVOID Overlapped, ULONG IoResult, ULONG_PTR NumberOfBytesTransferred, PTP_IO Io) {
+	if (IoResult == ERROR_SUCCESS) {
+		auto io = static_cast<IOData*>(Overlapped);
+		ULARGE_INTEGER offset = { io->Offset, io->OffsetHigh };
+		offset.QuadPart += chunkSize;
+		if (offset.QuadPart < io->Size) {
+			auto newio = new IOData;
+			newio->Size = io->Size;
+			newio->Buffer = std::make_unique<BYTE[]>(chunkSize);
+			newio->hSrc = io->hSrc;
+			newio->hDst = io->hDst;
+			::ZeroMemory(newio, sizeof(OVERLAPPED));
+			newio->Offset = offset.LowPart;
+			newio->OffsetHigh = offset.HighPart;
+			::StartThreadpoolIo(Io);
+			auto ok = ::ReadFile(newio->hSrc, newio->Buffer.get(), chunkSize, nullptr, newio);
+			auto error = ::GetLastError();
+			ATLASSERT(!ok && error == ERROR_IO_PENDING);
+		}
+
+		// read done, initiate write to the same offset in the target file
+		io->Internal = io->InternalHigh = 0;
+		auto writeIo = (PTP_IO)Context;
+		::StartThreadpoolIo(writeIo);
+		auto ok = ::WriteFile(io->hDst, io->Buffer.get(), (ULONG)NumberOfBytesTransferred, nullptr, io);
+		auto error = ::GetLastError();
+		ATLASSERT(!ok && error == ERROR_IO_PENDING);
+	}
+}
+
+void CMainDlg::WriteCallback(PTP_CALLBACK_INSTANCE Instance, PVOID Context, PVOID Overlapped, ULONG IoResult, ULONG_PTR NumberOfBytesTransferred, PTP_IO Io) {
+	if (IoResult == ERROR_SUCCESS) {
+		auto pThis = static_cast<CMainDlg*>(Context);
+		pThis->PostMessage(WM_PROGRESS);
+		auto io = static_cast<IOData*>(Overlapped);
+		delete io;
+		if (0 == InterlockedDecrement64(&pThis->m_OperationCount)) {
+			pThis->PostMessage(WM_DONE);
+		}
+	}
 }
