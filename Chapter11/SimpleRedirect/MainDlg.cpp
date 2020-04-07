@@ -37,6 +37,7 @@ LRESULT CMainDlg::OnRedirect(WORD, WORD wID, HWND, BOOL&) {
 	if (!CreateOtherProcess(hWrite.get()))
 		return Error(L"Failed to create process");
 
+	// local write handle not needed anymore
 	hWrite.reset();
 
 	char buffer[1 << 12] = { 0 };
