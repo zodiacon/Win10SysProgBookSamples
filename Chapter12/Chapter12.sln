@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleShare", "SimpleShare\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleVMMap", "SimpleVMMap\SimpleVMMap.vcxproj", "{6A9031DC-22CA-4A3F-914D-403B03E2D524}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleVMMap2", "SimpleVMMap2\SimpleVMMap2.vcxproj", "{63FD1304-6D79-4649-A880-4CAF30C10EA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{6A9031DC-22CA-4A3F-914D-403B03E2D524}.Release|x64.Build.0 = Release|x64
 		{6A9031DC-22CA-4A3F-914D-403B03E2D524}.Release|x86.ActiveCfg = Release|Win32
 		{6A9031DC-22CA-4A3F-914D-403B03E2D524}.Release|x86.Build.0 = Release|Win32
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Debug|x64.ActiveCfg = Debug|x64
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Debug|x64.Build.0 = Debug|x64
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Debug|x86.ActiveCfg = Debug|Win32
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Debug|x86.Build.0 = Debug|Win32
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Release|x64.ActiveCfg = Release|x64
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Release|x64.Build.0 = Release|x64
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Release|x86.ActiveCfg = Release|Win32
+		{63FD1304-6D79-4649-A880-4CAF30C10EA0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

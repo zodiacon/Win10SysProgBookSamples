@@ -1,4 +1,4 @@
-// SimpleVMMap.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// SimpleVMMap2.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <Windows.h>
@@ -7,6 +7,7 @@
 #include <string>
 #include <assert.h>
 #include <algorithm>
+#include <memory>
 
 int Error(const char* message) {
 	printf("%s (error=%d)\n", message, ::GetLastError());
@@ -65,7 +66,7 @@ std::string ProtectionToString(DWORD protection) {
 	};
 
 	std::for_each(std::begin(extra), std::end(extra), [&text, protection](auto& p) {
-		if (p.Value & protection) 
+		if (p.Value & protection)
 			((text += "/") += p.Text);
 		});
 
@@ -73,8 +74,8 @@ std::string ProtectionToString(DWORD protection) {
 }
 
 void DisplayHeaders() {
-	int len = printf(" %-22s %-10s %-8s   %-17s %-17s %-10s %s\n", 
-		"Base Address",  "Size", "State", "Protection", "Alloc. Protection", "Type", "Details");
+	int len = printf(" %-22s %-10s %-8s   %-17s %-17s %-10s %s\n",
+		"Base Address", "Size", "State", "Protection", "Alloc. Protection", "Type", "Details");
 	printf("%s\n", std::string(len - 1, '-').c_str());
 }
 
@@ -82,12 +83,67 @@ std::string GetDetails(HANDLE hProcess, MEMORY_BASIC_INFORMATION& mbi) {
 	if (mbi.State != MEM_COMMIT)
 		return "";
 
-	if (mbi.Type == MEM_IMAGE || mbi.Type == MEM_MAPPED) {
+	if (mbi.Type == MEM_IMAGE || mbi.Type ==  MEM_MAPPED) {
 		char path[MAX_PATH];
 		if (::GetMappedFileNameA(hProcess, mbi.BaseAddress, path, sizeof(path)) > 0)
 			return path;
 	}
 	return "";
+}
+
+std::string AttributesToString(PSAPI_WORKING_SET_EX_BLOCK attributes) {
+	if (!attributes.Valid)
+		return "(Not in working set)";
+
+	//auto text = "Protection: " + ProtectionToString(attributes.Win32Protection) + " ";
+	std::string text;
+	if (attributes.Shared)
+		text += "Shareable, ";
+	else
+		text += "Private, ";
+
+	if(attributes.ShareCount > 1)
+		text += "Shared, ";
+
+	if (attributes.Locked)
+		text += "Locked, ";
+	if (attributes.LargePage)
+		text += "Large Page, ";
+	if (attributes.Bad)
+		text += "Bad, ";
+	return text.substr(0, text.size() - 2);
+}
+
+void DisplayWorkingSetDetails(HANDLE hProcess, MEMORY_BASIC_INFORMATION& mbi) {
+	auto pages = mbi.RegionSize >> 12;
+	PSAPI_WORKING_SET_EX_INFORMATION info;
+	ULONG attributes = 0;
+	void* address = nullptr;
+	SIZE_T size = 0;
+	for (decltype(pages) i = 0; i < pages; i++) {
+		info.VirtualAddress = (BYTE*)mbi.BaseAddress + (i << 12);
+
+		if (!::QueryWorkingSetEx(hProcess, &info, sizeof(PSAPI_WORKING_SET_EX_INFORMATION))) {
+			printf("  <<<Unable to get working set information>>>\n");
+			break;
+		}
+
+		if (attributes == 0) {
+			address = info.VirtualAddress;
+			attributes = (ULONG)info.VirtualAttributes.Flags;
+			size = 1 << 12;
+		}
+		else if(attributes == (ULONG)info.VirtualAttributes.Flags) {
+			size += 1 << 12;
+		}
+		if(attributes != (ULONG)info.VirtualAttributes.Flags || i == pages - 1) {
+			printf("  Address: %16p (%10llu KB) Attributes: %08X %s\n",
+				address, size >> 10, attributes, AttributesToString(*(PSAPI_WORKING_SET_EX_BLOCK*)&attributes).c_str());
+			size = 1 << 12;
+			attributes = (ULONG)info.VirtualAttributes.Flags;
+			address = info.VirtualAddress;
+		}
+	}
 }
 
 void DisplayBlock(HANDLE hProcess, MEMORY_BASIC_INFORMATION& mbi) {
@@ -99,6 +155,8 @@ void DisplayBlock(HANDLE hProcess, MEMORY_BASIC_INFORMATION& mbi) {
 	printf(" %-17s", mbi.State == MEM_FREE ? "" : ProtectionToString(mbi.AllocationProtect).c_str());
 	printf(" %-8s", mbi.State == MEM_COMMIT ? MemoryTypeToString(mbi.Type) : "");
 	printf(" %s\n", GetDetails(hProcess, mbi).c_str());
+	if (mbi.State == MEM_COMMIT)
+		DisplayWorkingSetDetails(hProcess, mbi);
 }
 
 void ShowMemoryMap(HANDLE hProcess) {
