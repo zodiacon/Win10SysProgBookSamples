@@ -2,4 +2,4 @@
 
 The book is available here: https://leanpub.com/windows10systemprogramming and on [Amazon](https://www.amazon.com/gp/product/B086Y6M7LH/)
 
-![](https://github.com/zodiacon/Win10SysProgBookSamples/blob/master/Win10SysProg.png)
+![](https://github.com/zodiacon/Win10SysProgBookSamples/blob/master/cover2.png)
