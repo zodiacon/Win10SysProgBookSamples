@@ -128,7 +128,7 @@ int main(int argc, const char* argv[]) {
 	}
 
 	// open process
-	HANDLE hProcess = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
+	HANDLE hProcess = ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
 	if (!hProcess)
 		return Error("Failed to open process");
 
