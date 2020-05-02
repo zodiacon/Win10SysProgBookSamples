@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30014.187
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MicroExcel", "MicroExcel\MicroExcel.vcxproj", "{B6132BED-98F4-4425-8A4B-8D1F120C4B85}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorkingSets", "WorkingSets\WorkingSets.vcxproj", "{290405FB-8BBF-46F1-8433-BE7B396B38E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{B6132BED-98F4-4425-8A4B-8D1F120C4B85}.Release|x64.Build.0 = Release|x64
 		{B6132BED-98F4-4425-8A4B-8D1F120C4B85}.Release|x86.ActiveCfg = Release|Win32
 		{B6132BED-98F4-4425-8A4B-8D1F120C4B85}.Release|x86.Build.0 = Release|Win32
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Debug|x64.ActiveCfg = Debug|x64
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Debug|x64.Build.0 = Debug|x64
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Debug|x86.ActiveCfg = Debug|Win32
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Debug|x86.Build.0 = Debug|Win32
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Release|x64.ActiveCfg = Release|x64
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Release|x64.Build.0 = Release|x64
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Release|x86.ActiveCfg = Release|Win32
+		{290405FB-8BBF-46F1-8433-BE7B396B38E5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
