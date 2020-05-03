@@ -44,10 +44,10 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VistualListView.h">
+    <ClInclude Include="SortHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SortHelper.h">
+    <ClInclude Include="VirtualListView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

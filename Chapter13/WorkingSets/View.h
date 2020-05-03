@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VistualListView.h"
+#include "VirtualListView.h"
 
 class CView : 
 	public CWindowImpl<CView, CListViewCtrl>,
