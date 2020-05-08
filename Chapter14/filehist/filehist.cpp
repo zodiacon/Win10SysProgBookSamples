@@ -74,7 +74,7 @@ int wmain(int argc, const wchar_t* argv[]) {
 		});
 
 	// display results
-	for (auto& data : count) {
+	for (const auto& data : count) {
 		printf("0x%02X: %10llu (%5.2f %%)\n", data.Value, data.Count, data.Count * 100.0 / total);
 	}
 
