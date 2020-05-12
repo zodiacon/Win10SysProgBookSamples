@@ -8,7 +8,7 @@
 #include <Psapi.h>
 
 int Error(const char* text) {
-	printf("%s (%d)\n", text, ::GetLastError());
+	printf("%s (%u)\n", text, ::GetLastError());
 	return 1;
 }
 
@@ -30,13 +30,13 @@ DWORD FindMainNotepadThread() {
 				auto bs = ::wcsrchr(name, L'\\');
 				if (bs && ::_wcsicmp(bs, L"\\notepad.exe") == 0) {
 					tid = th32.th32ThreadID;
-					break;
 				}
 			}
 			::CloseHandle(hProcess);
 		}
-	} while (::Thread32Next(hSnapshot, &th32));
+	} while (tid == 0 && ::Thread32Next(hSnapshot, &th32));
 	::CloseHandle(hSnapshot);
+
 	return tid;
 }
 
@@ -45,12 +45,20 @@ int main() {
 	if (tid == 0)
 		return Error("Failed to locate Notepad");
 
-	auto hDll = ::LoadLibrary(L"InjectedLib.dll");
+	auto hDll = ::LoadLibrary(L"HookDll");
 	if (!hDll)
 		return Error("Failed to locate Dll\n");
 
-	auto setNotify = (void (WINAPI*)(DWORD, HHOOK))::GetProcAddress(hDll, "SetNotificationThread");
-	auto hHook = ::SetWindowsHookEx(WH_GETMESSAGE, (HOOKPROC)::GetProcAddress(hDll, "HookFunction"), hDll, tid);
+	using PSetNotify = void (WINAPI*)(DWORD, HHOOK);
+	auto setNotify = (PSetNotify)::GetProcAddress(hDll, "SetNotificationThread");
+	if (!setNotify)
+		return Error("Failed to locate SetNotificationThread function in DLL");
+
+	auto hookFunc = (HOOKPROC)::GetProcAddress(hDll, "HookFunction");
+	if (!hookFunc)
+		return Error("Failed to locate HookFunction function in DLL");
+
+	auto hHook = ::SetWindowsHookEx(WH_GETMESSAGE, hookFunc, hDll, tid);
 	if (!hHook)
 		return Error("Failed to install hook");
 
@@ -60,7 +68,6 @@ int main() {
 	MSG msg;
 	while (::GetMessage(&msg, nullptr, 0, 0)) {
 		if (msg.message == WM_APP) {
-			//printf("WM_CHAR: %d (%c)\n", (int)msg.wParam, (char)msg.wParam);
 			printf("%c", (int)msg.wParam);
 			if (msg.wParam == 13)
 				printf("\n");
@@ -68,4 +75,6 @@ int main() {
 	}
 	::UnhookWindowsHookEx(hHook);
 	::FreeLibrary(hDll);
+
+	return 0;
 }
