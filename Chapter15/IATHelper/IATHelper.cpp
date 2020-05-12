@@ -49,8 +49,8 @@ int IATHelper::HookAllModules(PCSTR moduleName, PVOID originalProc, PVOID hookPr
 
 	WCHAR name[256];
 	int count = 0;
-	for (int i = 0; i < needed / sizeof(HMODULE); i++) {
-		if (::GetModuleBaseName(::GetCurrentProcess(), hMod[i], name, 128)) {
+	for (DWORD i = 0; i < needed / sizeof(HMODULE); i++) {
+		if (::GetModuleBaseName(::GetCurrentProcess(), hMod[i], name, _countof(name))) {
 			count += HookFunction(name, moduleName, originalProc, hookProc);
 		}
 	}

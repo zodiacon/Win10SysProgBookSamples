@@ -16,7 +16,7 @@
 typedef bool(__stdcall* PIsPrime)(int);
 
 int main() {
-	auto hPrimesLib = ::LoadLibrary(L"c:\\temp\\SimpleDll.dll");
+	auto hPrimesLib = ::LoadLibrary(L"SimpleDll.dll");
 	if (hPrimesLib) {
 		// DLL found
 		auto IsPrime = (PIsPrime)::GetProcAddress(hPrimesLib, "IsPrime");
