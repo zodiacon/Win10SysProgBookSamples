@@ -9,7 +9,6 @@ int Error(const char* msg) {
 	return 1;
 }
 
-
 int main(int argc, const char* argv[]) {
 	if (argc < 3) {
 		printf("Usage: setvirt <pid> <on|off>\n");

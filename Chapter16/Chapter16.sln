@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wellknownsids", "wellknowns
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "setvirt", "setvirt\setvirt.vcxproj", "{87CF644D-CAB3-4985-A7E0-F47B3F9B5F3B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "runas", "runas\runas.vcxproj", "{1A493A08-EB7E-44E1-B76F-3B954420E6AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{87CF644D-CAB3-4985-A7E0-F47B3F9B5F3B}.Release|x64.Build.0 = Release|x64
 		{87CF644D-CAB3-4985-A7E0-F47B3F9B5F3B}.Release|x86.ActiveCfg = Release|Win32
 		{87CF644D-CAB3-4985-A7E0-F47B3F9B5F3B}.Release|x86.Build.0 = Release|Win32
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Debug|x64.ActiveCfg = Debug|x64
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Debug|x64.Build.0 = Debug|x64
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Debug|x86.ActiveCfg = Debug|Win32
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Debug|x86.Build.0 = Debug|Win32
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Release|x64.ActiveCfg = Release|x64
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Release|x64.Build.0 = Release|x64
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Release|x86.ActiveCfg = Release|Win32
+		{1A493A08-EB7E-44E1-B76F-3B954420E6AB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
