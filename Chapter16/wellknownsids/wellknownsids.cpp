@@ -27,13 +27,6 @@ int main() {
 	BYTE buffer[SECURITY_MAX_SID_SIZE];
 	PWSTR name;
 
-	LSA_OBJECT_ATTRIBUTES oa = { sizeof(oa) };
-	LSA_HANDLE hPolicy = nullptr;
-	POLICY_ACCOUNT_DOMAIN_INFO* info = nullptr;
-	if (0 == ::LsaOpenPolicy(nullptr, &oa, POLICY_VIEW_LOCAL_INFORMATION, &hPolicy)) {
-		::LsaQueryInformationPolicy(hPolicy, PolicyAccountDomainInformation, (PVOID*)&info);
-	}
-
 	WCHAR accountName[64] = { 0 }, domainName[64] = { 0 };
 	SID_NAME_USE use;
 
@@ -52,11 +45,6 @@ int main() {
 			name, domainName, accountName, SidNameUseToString(use));
 		::LocalFree(name);
 	}
-
-	if (info)
-		::LsaFreeMemory(info);
-	if (hPolicy)
-		::LsaClose(hPolicy);
 
 	return 0;
 }

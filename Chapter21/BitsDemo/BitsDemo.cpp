@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <Bits.h>
 #include <atlcomcli.h>
+#include "JobNotifications.h"
 
 // only needed with using the full variables CLSID_BackgroundCopyManager and/or IID_IBackgroundCopyManager
 //#pragma comment(lib, "bits")
@@ -148,12 +149,48 @@ HRESULT DoBITSWork2() {
 	return hr;
 }
 
-int main() {
-	::CoInitialize(nullptr);
-
-	HRESULT hr = DoBITSWork2();
+HRESULT DoBitsWorkWithNotify(PCWSTR jobName, PCWSTR remoteUrl, PCWSTR localFile, HANDLE hEvent = nullptr) {
+	CComPtr<IBackgroundCopyManager> spMgr;
+	HRESULT hr = spMgr.CoCreateInstance(__uuidof(BackgroundCopyManager));
 	if (FAILED(hr))
-		Error(hr);
+		return hr;
+
+	CComPtr<IBackgroundCopyJob> spJob;
+	GUID guid;
+	hr = spMgr->CreateJob(jobName, BG_JOB_TYPE_DOWNLOAD, &guid, &spJob);
+	if (FAILED(hr))
+		return hr;
+
+	hr = spJob->AddFile(remoteUrl, localFile);
+	if (FAILED(hr))
+		return hr;
+
+	spJob->SetNotifyFlags(BG_NOTIFY_JOB_TRANSFERRED | BG_NOTIFY_JOB_MODIFICATION 
+		| BG_NOTIFY_FILE_RANGES_TRANSFERRED | BG_NOTIFY_JOB_ERROR);
+	auto notify = new JobNotifications(hEvent);
+	hr = spJob->SetNotifyInterface(notify);
+	if (FAILED(hr))
+		return hr;
+
+	return spJob->Resume();
+}
+
+
+int main() {
+	::CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+	HANDLE hEvent[] = {
+		::CreateEvent(nullptr, FALSE, FALSE, nullptr),
+		::CreateEvent(nullptr, FALSE, FALSE, nullptr),
+	};
+	DoBitsWorkWithNotify(L"My first Job", L"http://speedtest.ftp.otenet.gr/files/test10Mb.db", L"c:\\temp\\test1.db", hEvent[0]);
+	DoBitsWorkWithNotify(L"My second Job", L"http://speedtest.ftp.otenet.gr/files/test1Mb.db", L"c:\\temp\\test2.db", hEvent[1]);
+
+	::WaitForMultipleObjects(_countof(hEvent), hEvent, TRUE, INFINITE);
+	printf("All jobs completed!\n");
+
+	::CloseHandle(hEvent[0]);
+	::CloseHandle(hEvent[1]);
 
 	::CoUninitialize();
 	return 0;

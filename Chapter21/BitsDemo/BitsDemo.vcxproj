@@ -140,6 +140,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BitsDemo.cpp" />
+    <ClCompile Include="JobNotifications.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="JobNotifications.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
