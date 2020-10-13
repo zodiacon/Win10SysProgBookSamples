@@ -20,28 +20,24 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved) {
 	switch (reason) {
 		case DLL_PROCESS_ATTACH:
 			g_hInstDll = hModule;
-			DisableThreadLibraryCalls(hModule);
+			::DisableThreadLibraryCalls(hModule);
 			break;
-		case DLL_THREAD_ATTACH:
-		case DLL_THREAD_DETACH:
+
 		case DLL_PROCESS_DETACH:
 			break;
 	}
 	return TRUE;
 }
 
-HANDLE CreateSimpleTransaction() {
-	return ::CreateTransaction(nullptr, nullptr, TRANSACTION_DO_NOT_PROMOTE, 0, 0, INFINITE, nullptr);
-}
+static const WCHAR clsidPath[] = L"CLSID\\{FA523D4E-DB35-4D0B-BD0A-002281FE3F31}";
 
 STDAPI DllRegisterServer() {
-	HANDLE hTransaction = CreateSimpleTransaction();
+	HANDLE hTransaction = ::CreateTransaction(nullptr, nullptr, TRANSACTION_DO_NOT_PROMOTE, 0, 0, INFINITE, nullptr);
 	if(hTransaction == INVALID_HANDLE_VALUE)
 		return HRESULT_FROM_WIN32(::GetLastError());
 
 	HKEY hKey;
-	auto error = ::RegCreateKeyTransacted(HKEY_CLASSES_ROOT,
-		L"CLSID\\{FA523D4E-DB35-4D0B-BD0A-002281FE3F31}",
+	auto error = ::RegCreateKeyTransacted(HKEY_CLASSES_ROOT, clsidPath,
 		0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, 
 		nullptr, &hKey, nullptr, hTransaction, nullptr);
 	if (error != ERROR_SUCCESS)
@@ -76,14 +72,31 @@ STDAPI DllRegisterServer() {
 }
 
 STDAPI DllUnregisterServer() {
+	HANDLE hTransaction = ::CreateTransaction(nullptr, nullptr, TRANSACTION_DO_NOT_PROMOTE, 0, 0, INFINITE, nullptr);
+	if (hTransaction == INVALID_HANDLE_VALUE)
+		return HRESULT_FROM_WIN32(::GetLastError());
+
 	HKEY hKey;
-	auto error = ::RegOpenKeyEx(HKEY_CLASSES_ROOT, L"CLSID\\{FA523D4E-DB35-4D0B-BD0A-002281FE3F31}", 0,
-		DELETE | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE, &hKey);
+	auto error = ::RegOpenKeyTransacted(HKEY_CLASSES_ROOT, clsidPath, 0,
+		DELETE | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE | KEY_SET_VALUE, 
+		&hKey, hTransaction, nullptr);
 	if (error != ERROR_SUCCESS)
 		return HRESULT_FROM_WIN32(error);
 
 	error = ::RegDeleteTree(hKey, nullptr);
-	::RegCloseKey(hKey);
+	if (error != ERROR_SUCCESS)
+		return HRESULT_FROM_WIN32(error);
 
-	return HRESULT_FROM_WIN32(error);
+	error = ::RegDeleteKeyTransacted(HKEY_CLASSES_ROOT, clsidPath, 0, 0, hTransaction, nullptr);
+	if (error != ERROR_SUCCESS)
+		return HRESULT_FROM_WIN32(error);
+
+	BOOL ok = ::CommitTransaction(hTransaction);
+	auto hr = ok ? S_OK : HRESULT_FROM_WIN32(::GetLastError());
+
+	::RegCloseKey(hKey);
+	::CloseHandle(hTransaction);
+
+	return hr;
 }
+

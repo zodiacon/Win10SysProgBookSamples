@@ -32,7 +32,7 @@ int main() {
 
 	for (int i = 0; i < 120; i++) {
 		DWORD size = sizeof(buffer);
-		if (!::CreateWellKnownSid((WELL_KNOWN_SID_TYPE)i, nullptr /*info->DomainSid*/, (PSID)buffer, &size))
+		if (!::CreateWellKnownSid((WELL_KNOWN_SID_TYPE)i, nullptr, (PSID)buffer, &size))
 			continue;
 
 		::ConvertSidToStringSid((PSID)buffer, &name);
