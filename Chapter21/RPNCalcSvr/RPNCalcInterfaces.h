@@ -15,4 +15,4 @@ DEFINE_GUID(IID_IRPNCalculator,
 DEFINE_GUID(CLSID_RPNCalculator,
 	0xfa523d4e, 0xdb35, 0x4d0b, 0xbd, 0xa, 0x0, 0x22, 0x81, 0xfe, 0x3f, 0x31);
 
-class __declspec(uuid("7020B8D9-CEFE-46DC-89D7-F0261C3CDE66")) RPNCalculator;
+class __declspec(uuid("FA523D4E-DB35-4D0B-BD0A-002281FE3F31")) RPNCalculator;
