@@ -31,19 +31,21 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	// check for domain
 	PCWSTR domain = L".";
+	PCWSTR username = argv[1];
 	if (::wcschr(argv[1], '@'))
 		domain = nullptr;
 	else {
 		auto backslash = ::wcschr(argv[1], L'\\');
 		if (backslash) {
-			domain = backslash + 1;
+			domain = argv[1];
 			*backslash = L'\0';
+			username = backslash + 1;
 		}
 	}
 
 	STARTUPINFO si = { sizeof(si) };
 	PROCESS_INFORMATION pi;
-	BOOL success = ::CreateProcessWithLogonW(argv[1], domain, password, 
+	BOOL success = ::CreateProcessWithLogonW(username, domain, password, 
 		LOGON_WITH_PROFILE, nullptr, argv[2],
 		0, nullptr, nullptr, &si, &pi);
 	if (!success)
