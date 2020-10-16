@@ -10,6 +10,27 @@ int Error(const char* msg) {
 	return 1;
 }
 
+int GetPassword(WCHAR* password, int maxLen) {
+	int count = 0;
+	while (count < maxLen - 1) {
+		auto ch = ::_getwch();
+		if (ch == L'\r')
+			break;
+		if (ch == 8) {
+			if (count == 0)
+				continue;
+			count--;
+			printf("\b \b");
+			continue;
+		}
+		printf("*");
+		password[count++] = ch;
+	}
+	password[count] = 0;
+	printf("\n");
+	return count;
+}
+
 int wmain(int argc, wchar_t* argv[]) {
 	if (argc < 3) {
 		printf("Usage: runas <[domain\\]username> <\"commandline\">\n");
@@ -18,21 +39,12 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	printf("Password: ");
 	WCHAR password[64];
-	int count = 0;
-	while (count < _countof(password) - 1) {
-		auto ch = ::_getwch();
-		if (ch == L'\r')
-			break;
-		printf("*");
-		password[count++] = ch;
-	}
-	password[count] = 0;
-	printf("\n");
+	GetPassword(password, _countof(password));
 
 	// check for domain
 	PCWSTR domain = L".";
 	PCWSTR username = argv[1];
-	if (::wcschr(argv[1], '@'))
+	if (::wcschr(argv[1], L'@'))
 		domain = nullptr;
 	else {
 		auto backslash = ::wcschr(argv[1], L'\\');

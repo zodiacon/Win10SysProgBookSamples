@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calculator", "Calculator\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalcCS", "CalcCS\CalcCS.csproj", "{38C18AC8-EDE3-45B3-AF2C-FAC44BBFC5BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitsDemoCS", "BitsDemoCS\BitsDemoCS.csproj", "{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,18 @@ Global
 		{38C18AC8-EDE3-45B3-AF2C-FAC44BBFC5BD}.Release|x64.Build.0 = Release|Any CPU
 		{38C18AC8-EDE3-45B3-AF2C-FAC44BBFC5BD}.Release|x86.ActiveCfg = Release|Any CPU
 		{38C18AC8-EDE3-45B3-AF2C-FAC44BBFC5BD}.Release|x86.Build.0 = Release|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Debug|x64.Build.0 = Debug|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Debug|x86.Build.0 = Debug|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Release|x64.ActiveCfg = Release|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Release|x64.Build.0 = Release|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC4C9888-C2C1-4E65-BCD9-422EBD8E937A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
