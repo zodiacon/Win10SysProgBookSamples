@@ -31,7 +31,7 @@ std::wstring GetUserNameFromSid(const PSID sid, SID_NAME_USE* puse = nullptr) {
 
 std::string SDControlToString(SECURITY_DESCRIPTOR_CONTROL control) {
 	std::string result;
-	static struct {
+	static const struct {
 		DWORD flag;
 		PCSTR text;
 	} attributes[] = {
@@ -41,8 +41,8 @@ std::string SDControlToString(SECURITY_DESCRIPTOR_CONTROL control) {
 		{ SE_DACL_DEFAULTED, "DACL Defaulted" },
 		{ SE_SACL_PRESENT, "SACL Present" },
 		{ SE_SACL_DEFAULTED, "SACL Defaulted" },
-		{ SE_DACL_AUTO_INHERIT_REQ, "DACL Auto Inherit Req" },
-		{ SE_SACL_AUTO_INHERIT_REQ, "SACL Auto Inherit Req" },
+		{ SE_DACL_AUTO_INHERIT_REQ, "DACL Auto Inherit Required" },
+		{ SE_SACL_AUTO_INHERIT_REQ, "SACL Auto Inherit Required" },
 		{ SE_DACL_AUTO_INHERITED, "DACL Auto Inherited" },
 		{ SE_SACL_AUTO_INHERITED, "SACL Auto Inherited" },
 		{ SE_DACL_PROTECTED, "DACL Protected" },
