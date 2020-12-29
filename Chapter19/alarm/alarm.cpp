@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <string>
-#include "..\AlarmSvc\Common.h"
+#include "..\AlarmSvc\AlarmCommon.h"
 
 int Error(const char* msg) {
 	printf("%s (%u)\n", msg, ::GetLastError());
@@ -13,11 +13,11 @@ int Error(const char* msg) {
 
 int main(int argc, const char* argv[]) {
 	if (argc < 2) {
-		printf("Usage: alarm <set hh:mm:ss | remove>\n");
+		printf("Usage: alarm <set hh:mm:ss | cancel>\n");
 		return 0;
 	}
 
-	HANDLE hFile = ::CreateFile(L"\\\\.\\mailslot\\Alarm", GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+	HANDLE hFile = ::CreateFile(L"\\\\.\\mailslot\\Alarm", GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
 		return Error("Failed to open mailslot");
 
@@ -25,25 +25,40 @@ int main(int argc, const char* argv[]) {
 
 	if (_stricmp(argv[1], "set") == 0 && argc > 2) {
 		AlarmMessage msg;
-		msg.Type = MessageType::AddAlarm;
+		msg.Type = MessageType::SetAlarm;
 		std::string time(argv[2]);
 		if (time.size() != 8) {
 			printf("Time format is illegal.\n");
 			return 1;
 		}
+		//
+		// get local time (for obtaining the date)
+		//
 		SYSTEMTIME st;
-		::GetSystemTime(&st);
+		::GetLocalTime(&st);
+
+		//
+		// change the time based on user input
+		//
 		st.wHour = atoi(time.substr(0, 2).c_str());
 		st.wMinute = atoi(time.substr(3, 2).c_str());
 		st.wSecond = atoi(time.substr(6, 2).c_str());
 		::SystemTimeToFileTime(&st, &msg.Time);
+		
+		//
+		// convert to UTC time
+		//
 		::LocalFileTimeToFileTime(&msg.Time, &msg.Time);
+
+		//
+		// write to the mailslot
+		//
 		if (!::WriteFile(hFile, &msg, sizeof(msg), &bytes, nullptr))
 			return Error("failed in WriteFile");
 	}
-	else if (_stricmp(argv[1], "remove") == 0) {
+	else if (_stricmp(argv[1], "cancel") == 0) {
 		AlarmMessage msg;
-		msg.Type = MessageType::RemoveAlarm;
+		msg.Type = MessageType::CancelAlarm;
 		if (!::WriteFile(hFile, &msg, sizeof(msg), &bytes, nullptr))
 			return Error("failed in WriteFile");
 	}

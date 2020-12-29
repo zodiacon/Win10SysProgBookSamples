@@ -1,8 +1,8 @@
 #pragma once
 
 enum class MessageType {
-	AddAlarm,
-	RemoveAlarm,
+	SetAlarm,
+	CancelAlarm,
 };
 
 struct AlarmMessage {

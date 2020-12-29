@@ -2,7 +2,7 @@
 //
 
 #include "pch.h"
-#include "Common.h"
+#include "AlarmCommon.h"
 #include <atlbase.h>
 
 int Error(const char* msg, DWORD error = ::GetLastError());
@@ -66,17 +66,25 @@ void WINAPI AlarmMain(DWORD dwNumServicesArgs, LPTSTR* lpServiceArgVectors) {
 
 		SetStatus(SERVICE_START_PENDING);
 
-		BYTE worldSid[SECURITY_MAX_SID_SIZE], systemSid[SECURITY_MAX_SID_SIZE];
+		BYTE worldSid[SECURITY_MAX_SID_SIZE];
 		DWORD len = sizeof(worldSid);
 		auto pWorldSid = (PSID)worldSid;
-		auto pSystemSid = (PSID)systemSid;
 
 		if (!::CreateWellKnownSid(WinWorldSid, nullptr, pWorldSid, &len))
 			break;
 
-		len = sizeof(systemSid);
-		if (!::CreateWellKnownSid(WinLocalSystemSid, nullptr, pSystemSid, &len))
+		// get SID of the user running this process
+		HANDLE hToken;
+		if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &hToken))
 			break;
+
+		BYTE userBuffer[SECURITY_MAX_SID_SIZE + sizeof(TOKEN_USER) + sizeof(SID_AND_ATTRIBUTES)];
+		auto user = (TOKEN_USER*)userBuffer;
+		BOOL ok = ::GetTokenInformation(hToken, TokenUser, userBuffer, sizeof(userBuffer), &len);
+		::CloseHandle(hToken);
+		if (!ok)
+			break;
+		auto ownerSid = user->User.Sid;
 
 		PSECURITY_DESCRIPTOR sd = ::HeapAlloc(::GetProcessHeap(), 0, SECURITY_DESCRIPTOR_MIN_LENGTH);
 		if (!sd)
@@ -90,7 +98,7 @@ void WINAPI AlarmMain(DWORD dwNumServicesArgs, LPTSTR* lpServiceArgVectors) {
 		ea[0].grfInheritance = NO_INHERITANCE;
 		ea[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
 		ea[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-		ea[0].Trustee.ptstrName = (PWSTR)pSystemSid;
+		ea[0].Trustee.ptstrName = (PWSTR)ownerSid;
 
 		ea[1].grfAccessPermissions = FILE_GENERIC_WRITE | FILE_GENERIC_READ;
 		ea[1].grfAccessMode = SET_ACCESS;
@@ -102,7 +110,7 @@ void WINAPI AlarmMain(DWORD dwNumServicesArgs, LPTSTR* lpServiceArgVectors) {
 		if (ERROR_SUCCESS != ::SetEntriesInAcl(_countof(ea), ea, nullptr, &dacl))
 			break;
 
-		if (!::SetSecurityDescriptorOwner(sd, pSystemSid, FALSE))
+		if (!::SetSecurityDescriptorOwner(sd, ownerSid, FALSE))
 			break;
 
 		if (!::SetSecurityDescriptorDacl(sd, TRUE, dacl, FALSE))
@@ -148,18 +156,17 @@ void WINAPI AlarmMain(DWORD dwNumServicesArgs, LPTSTR* lpServiceArgVectors) {
 
 	::CloseHandle(g_hStopEvent);
 	::CloseHandle(g_hMailslot);
-
 }
 
 void HandleMessage(const AlarmMessage& msg) {
 	switch (msg.Type) {
-		case MessageType::AddAlarm:
+		case MessageType::SetAlarm:
 			if (g_Timer == nullptr)
 				g_Timer = ::CreateThreadpoolTimer(OnTimerExpired, nullptr, nullptr);
 			::SetThreadpoolTimer(g_Timer, (PFILETIME)&msg.Time, 0, 1000);
 			break;
 
-		case MessageType::RemoveAlarm:
+		case MessageType::CancelAlarm:
 			if (g_Timer) {
 				::CloseThreadpoolTimer(g_Timer);
 				g_Timer = nullptr;
@@ -180,7 +187,7 @@ DWORD WINAPI AlarmHandler(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData
 
 void SetStatus(DWORD status) {
 	g_Status.dwCurrentState = status;
-	g_Status.dwControlsAccepted = status == SERVICE_RUNNING ? SERVICE_CONTROL_STOP : 0;
+	g_Status.dwControlsAccepted = status == SERVICE_RUNNING ? SERVICE_ACCEPT_STOP : 0;
 	::SetServiceStatus(g_hService, &g_Status);
 }
 
@@ -191,7 +198,7 @@ void NTAPI OnTimerExpired(PTP_CALLBACK_INSTANCE Instance, PVOID Context, PTP_TIM
 
 	::WTSSendMessage(nullptr, ::WTSGetActiveConsoleSessionId(),
 		title, sizeof(title), msg, sizeof(msg),
-		MB_OK, 0, &response, FALSE);
+		MB_OK | MB_ICONEXCLAMATION, 0, &response, FALSE);
 }
 
 bool IsRunningElevated() {
@@ -248,7 +255,7 @@ int InstallService() {
 		SERVICE_DEMAND_START,
 		SERVICE_ERROR_NORMAL,
 		path,
-		nullptr, nullptr, nullptr, nullptr, nullptr);
+		nullptr, nullptr, nullptr, L"NT AUTHORITY\\LocalService", nullptr);
 	if (!hService)
 		return Error("Failed to install service");
 
