@@ -15,6 +15,8 @@ PCWSTR ErrorControlToString(DWORD ec);
 PCWSTR ServiceStateToString(DWORD state);
 PCWSTR ServiceStateToString(DWORD state);
 std::wstring ServiceControlsAcceptedToString(DWORD accepted);
+std::unique_ptr<BYTE[]> GetServiceConfig(const wchar_t* name);
+bool DisplayTriggers(SC_HANDLE hService);
 
 int wmain(int argc, const wchar_t* argv[]) {
 	if(argc > 1)
@@ -77,10 +79,84 @@ int GetServiceStatus(const wchar_t* name, SERVICE_STATUS_PROCESS& status) {
 	return 0;
 }
 
+PCSTR TriggerTypeToString(DWORD type) {
+	switch (type) {
+		case SERVICE_TRIGGER_TYPE_CUSTOM: return "Custom";
+		case SERVICE_TRIGGER_TYPE_DEVICE_INTERFACE_ARRIVAL: return "Device Arrival";
+		case SERVICE_TRIGGER_TYPE_DOMAIN_JOIN: return "Domain Join";
+		case SERVICE_TRIGGER_TYPE_FIREWALL_PORT_EVENT: return "Firewall Port Event";
+		case SERVICE_TRIGGER_TYPE_GROUP_POLICY: return "Group Policy";
+		case SERVICE_TRIGGER_TYPE_IP_ADDRESS_AVAILABILITY: return "IP Address Availability";
+		case SERVICE_TRIGGER_TYPE_NETWORK_ENDPOINT: return "Network Endpoint";
+		case SERVICE_TRIGGER_TYPE_CUSTOM_SYSTEM_STATE_CHANGE: return "Custom System State Changed";
+		case SERVICE_TRIGGER_TYPE_AGGREGATE: return "Aggregate";
+	}
+	return "(Unknown)";
+}
+
+bool DisplayTriggers(SC_HANDLE hService) {
+	DWORD needed;
+	//
+	// get required size
+	//
+	if(!::QueryServiceConfig2(hService, SERVICE_CONFIG_TRIGGER_INFO, nullptr, 0, &needed) &&
+		::GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+		return false;
+
+	//
+	// allocate required size
+	//
+	auto buffer = std::make_unique<BYTE[]>(needed);
+	if (!::QueryServiceConfig2(hService, SERVICE_CONFIG_TRIGGER_INFO, buffer.get(), needed, &needed))
+		return false;
+
+	auto info = reinterpret_cast<SERVICE_TRIGGER_INFO*>(buffer.get());
+	WCHAR sguid[64];
+	for (DWORD i = 0; i < info->cTriggers; i++) {
+		const auto& tinfo = info->pTriggers[i];
+		printf("Trigger %u\n", i);
+		printf("  Type: %s\n", TriggerTypeToString(tinfo.dwTriggerType));
+		printf("  Action: %s\n", tinfo.dwAction == SERVICE_TRIGGER_ACTION_SERVICE_START ? "Start" : "Stop");
+		if (::StringFromGUID2(*tinfo.pTriggerSubtype, sguid, _countof(sguid)))
+			printf("  GUID: %ws\n", sguid);
+	}
+
+	return true;
+}
+
+std::unique_ptr<BYTE[]> GetServiceConfig(const wchar_t* name) {
+	auto hScm = ::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT);
+	if (!hScm)
+		return nullptr;
+
+	auto hService = ::OpenService(hScm, name, SERVICE_QUERY_CONFIG);
+	if (!hService)
+		return nullptr;
+
+	auto size = 8 << 10;	// 8 KB
+	auto buffer = std::make_unique<BYTE[]>(size);
+	assert(buffer);
+
+	DWORD needed;
+	BOOL ok = ::QueryServiceConfig(hScm, reinterpret_cast<QUERY_SERVICE_CONFIG*>(buffer.get()), size, &needed);
+	::CloseServiceHandle(hService);
+	::CloseServiceHandle(hScm);
+
+	return ok ? std::move(buffer) : nullptr;
+}
+
 int DisplayServiceStatus(const wchar_t* name) {
 	SERVICE_STATUS_PROCESS status;
 	if (GetServiceStatus(name, status))
 		return 1;
+
+	auto buffer = GetServiceConfig(name);
+	if (buffer) {
+		auto config = reinterpret_cast<QUERY_SERVICE_CONFIG*>(buffer.get());
+		printf("Display name: %ws\n", config->lpDisplayName);
+		printf("Image path: %ws\n", config->lpBinaryPathName);
+		printf("Error control: %ws\n", ErrorControlToString(config->dwErrorControl));
+	}
 
 	printf("Service type: %ws\n", ServiceTypeToString(status.dwServiceType).c_str());
 	printf("Service state: %ws\n", ServiceStateToString(status.dwCurrentState));
@@ -161,6 +237,9 @@ std::wstring ServiceControlsAcceptedToString(DWORD accepted) {
 	for (auto& item : types)
 		if ((item.type & accepted) == item.type)
 			text += std::wstring(item.text) + L", ";
+
+	if (text.empty())
+		return L"(None)";
 
 	return text.substr(0, text.size() - 2);
 }
