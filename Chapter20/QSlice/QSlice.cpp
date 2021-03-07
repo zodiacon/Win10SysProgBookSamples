@@ -91,5 +91,6 @@ int main(int argc, const char* argv[]) {
 		printf("\r\033[%dA", display);
 		RET_IF_ERR(::PdhCollectQueryData(hQuery.get()));
 	}
+	return 0;
 }
 

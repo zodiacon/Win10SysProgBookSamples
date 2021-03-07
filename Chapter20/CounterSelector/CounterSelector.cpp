@@ -23,6 +23,9 @@ int main() {
 	config.bDisableMachineSelection = FALSE;
 	config.bLocalCountersOnly = TRUE;
 	config.bSingleCounterPerDialog = TRUE;
+
+	// BUG: setting to TRUE does not cause a crash with <All Instances> but nothing is reported as selected
+	config.bSingleCounterPerAdd = FALSE;	
 	config.bIncludeInstanceIndex = TRUE;
 	//config.bWildCardInstances = TRUE;
 	config.bHideDetailBox = TRUE;
