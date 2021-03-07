@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QSlice", "QSlice\QSlice.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CounterSelector", "CounterSelector\CounterSelector.vcxproj", "{2DE287D1-9109-4B25-8D90-5E89A8326782}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snapproc", "snapproc\snapproc.vcxproj", "{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{2DE287D1-9109-4B25-8D90-5E89A8326782}.Release|x64.Build.0 = Release|x64
 		{2DE287D1-9109-4B25-8D90-5E89A8326782}.Release|x86.ActiveCfg = Release|Win32
 		{2DE287D1-9109-4B25-8D90-5E89A8326782}.Release|x86.Build.0 = Release|Win32
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Debug|x64.ActiveCfg = Debug|x64
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Debug|x64.Build.0 = Debug|x64
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Debug|x86.ActiveCfg = Debug|Win32
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Debug|x86.Build.0 = Debug|Win32
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Release|x64.ActiveCfg = Release|x64
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Release|x64.Build.0 = Release|x64
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Release|x86.ActiveCfg = Release|Win32
+		{7ED8C594-E2F1-4B4D-B950-1AC47B364E1F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
