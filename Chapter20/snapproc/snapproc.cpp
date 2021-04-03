@@ -42,6 +42,7 @@ int main(int argc, const char* argv[]) {
 				case 'm': case 'M':
 					flags |= PSS_CAPTURE_VA_CLONE;
 					break;
+
 			}
 		}
 	}
