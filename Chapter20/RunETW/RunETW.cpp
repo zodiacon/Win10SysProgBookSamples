@@ -140,8 +140,8 @@ bool RunSession(const std::vector<GUID>& providers, PCWSTR filename, bool realTi
 	if(ERROR_SUCCESS != status)
 		return false;
 
-	for(auto& guid : providers) {
-		status = ::EnableTraceEx(&guid, nullptr, hTrace, TRUE, TRACE_LEVEL_INFORMATION, 0, 0, 0, nullptr);
+	for(auto& guid : providers) {	
+		status = ::EnableTraceEx(&guid, nullptr, hTrace, TRUE, TRACE_LEVEL_INFORMATION, 0, 0, EVENT_ENABLE_PROPERTY_STACK_TRACE, nullptr);
 		if(ERROR_SUCCESS != status) {
 			::StopTrace(hTrace, sessionName, props);
 			return false;
