@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParseETW", "ParseETW\ParseE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunETW2", "RunETW2\RunETW2.vcxproj", "{23F4F057-4C62-4C59-B2ED-D3833A35B696}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KernelETW", "KernelETW\KernelETW.vcxproj", "{7438091C-4677-48D0-850B-99204EA38B2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -101,6 +103,14 @@ Global
 		{23F4F057-4C62-4C59-B2ED-D3833A35B696}.Release|x64.Build.0 = Release|x64
 		{23F4F057-4C62-4C59-B2ED-D3833A35B696}.Release|x86.ActiveCfg = Release|Win32
 		{23F4F057-4C62-4C59-B2ED-D3833A35B696}.Release|x86.Build.0 = Release|Win32
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Debug|x64.ActiveCfg = Debug|x64
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Debug|x64.Build.0 = Debug|x64
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Debug|x86.ActiveCfg = Debug|Win32
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Debug|x86.Build.0 = Debug|Win32
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Release|x64.ActiveCfg = Release|x64
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Release|x64.Build.0 = Release|x64
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Release|x86.ActiveCfg = Release|Win32
+		{7438091C-4677-48D0-850B-99204EA38B2C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
