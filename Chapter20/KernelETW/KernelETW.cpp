@@ -100,7 +100,8 @@ int wmain(int argc, const wchar_t* argv[]) {
 }
 
 bool RunSession(DWORD flags, PCWSTR filename, bool realTime) {
-	const WCHAR sessionName[] = KERNEL_LOGGER_NAME;
+	// session name must be KERNEL_LOGGER_NAME for Win7 or earlier
+	const WCHAR sessionName[] = L"Chapter20KernelSession"; 	// assume Windows 8+
 
 	auto size = sizeof(EVENT_TRACE_PROPERTIES)
 		+ (filename ? ((::wcslen(filename) + 1) * sizeof(WCHAR)) : 0)
@@ -120,9 +121,9 @@ bool RunSession(DWORD flags, PCWSTR filename, bool realTime) {
 		props->Wnode.BufferSize = (ULONG)size;
 		props->Wnode.Flags = WNODE_FLAG_TRACED_GUID;
 		props->Wnode.ClientContext = 1;
-		props->Wnode.Guid = SystemTraceControlGuid;
+		//props->Wnode.Guid = SystemTraceControlGuid;
 		props->EnableFlags = flags;
-		props->LogFileMode = (filename ? EVENT_TRACE_FILE_MODE_SEQUENTIAL : 0) | (realTime ? EVENT_TRACE_REAL_TIME_MODE : 0);
+		props->LogFileMode = (filename ? EVENT_TRACE_FILE_MODE_SEQUENTIAL : 0) | (realTime ? EVENT_TRACE_REAL_TIME_MODE : 0) | EVENT_TRACE_SYSTEM_LOGGER_MODE;
 		props->MaximumFileSize = 100;	// 100 MB
 		props->LoggerNameOffset = sizeof(*props);
 		props->LogFileNameOffset = filename ? sizeof(*props) + sizeof(sessionName) : 0;
