@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <vector>
 #include <algorithm>
+#include <VersionHelpers.h>
 
 #pragma comment(lib, "tdh")
 
@@ -236,6 +237,28 @@ bool DumpProviderEvents(const GUID& guid) {
 	return true;
 }
 
+bool DumpProviderFilters(const GUID& guid) {
+	ULONG size = 0;
+	ULONG count;
+	if(ERROR_INSUFFICIENT_BUFFER != ::TdhEnumerateProviderFilters((LPGUID)&guid, 0, nullptr, &count, nullptr, &size))
+		return false;
+
+	auto buffer = std::make_unique<BYTE[]>(size);
+	if(!buffer)
+		return false;
+
+	auto info = reinterpret_cast<PPROVIDER_FILTER_INFO>(buffer.get());
+	if(ERROR_SUCCESS != ::TdhEnumerateProviderFilters((LPGUID)&guid, 0, nullptr, &count, &info, &size))
+		return false;
+
+	for(ULONG i = 0; i < count; i++) {
+		auto& fi = info[i];
+		printf("Filter Id: %d Version: %d Message: %ws Properties: %u \n",
+			fi.Id, fi.Version, (PCWSTR)(buffer.get() + fi.MessageOffset), fi.PropertyCount);
+	}
+	return true;
+}
+
 void DisplayProviderFields(const GUID& guid) {
 	struct {
 		EVENT_FIELD_TYPE type;
@@ -291,6 +314,10 @@ bool DisplayProviderInfo(const std::wstring& name) {
 
 	if(!DumpProviderEvents(provider.Guid))
 		printf("No event information provided\n");
+
+	if(::IsWindows7OrGreater())
+		DumpProviderFilters(provider.Guid);
+
 	return true;
 }
 
@@ -312,6 +339,7 @@ int wmain(int argc, const wchar_t* argv[]) {
 			::StringFromGUID2(provider.Guid, sguid, _countof(sguid));
 			printf("%-50ws %ws\n", provider.Name.c_str(), sguid);
 		}
+		printf("%u Providers.\n", (uint32_t)providers.size());
 	}
 	return 0;
 }
