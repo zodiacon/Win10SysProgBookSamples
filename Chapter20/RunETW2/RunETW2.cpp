@@ -21,6 +21,24 @@ HANDLE g_hStop;
 
 std::vector<GUID> GetProviders(std::vector<PCWSTR> names) {
 	std::vector<GUID> providers;
+	providers.reserve(names.size());
+
+	auto count = names.size();
+	for(size_t i = 0; i < count; i++) {
+		auto name = names[i];
+		if(name[0] == L'{') {	// GUID rather than name
+			GUID guid;
+			if(S_OK == ::CLSIDFromString(name, &guid)) {
+				providers.push_back(guid);
+				names.erase(names.begin() + i);
+				i--;
+				count--;
+			}
+		}
+	}
+
+	if(names.empty())
+		return providers;
 
 	ULONG size = 0;
 	auto error = ::TdhEnumerateProviders(nullptr, &size);
@@ -38,8 +56,6 @@ std::vector<GUID> GetProviders(std::vector<PCWSTR> names) {
 	if(error != ERROR_SUCCESS)
 		return providers;
 
-	// build a vector of providers
-	providers.reserve(data->NumberOfProviders);
 	int found = 0;
 	for(ULONG i = 0; i < data->NumberOfProviders && found < names.size(); i++) {
 		const auto& item = data->TraceProviderInfoArray[i];
@@ -184,7 +200,7 @@ bool RunSession(const std::vector<GUID>& providers, PCWSTR filename, bool realTi
 
 	for(auto& guid : providers) {
 		status = ::EnableTraceEx(&guid, nullptr, hTrace, TRUE, 
-			TRACE_LEVEL_INFORMATION, 0, 0, 
+			TRACE_LEVEL_VERBOSE, 0, 0, 
 			EVENT_ENABLE_PROPERTY_STACK_TRACE, nullptr);
 		if(ERROR_SUCCESS != status) {
 			::StopTrace(hTrace, sessionName, props);
@@ -295,6 +311,16 @@ void DisplayEventInfo(PEVENT_RECORD rec, PTRACE_EVENT_INFO info) {
 			// special case for IPv6 address
 			if(pi.nonStructType.InType == TDH_INTYPE_BINARY && pi.nonStructType.OutType == TDH_OUTTYPE_IPV6)
 				len = sizeof(IN6_ADDR);
+
+			if(pi.Flags & PropertyParamLength) {
+				// property length is stored elsewhere
+				auto index = pi.lengthPropertyIndex;
+				PROPERTY_DATA_DESCRIPTOR desc;
+				desc.ArrayIndex = ULONG_MAX;
+				desc.PropertyName = (ULONGLONG)propName;
+				desc.Reserved = 0;
+				::TdhGetPropertySize(rec, 0, nullptr, 1, &desc, &len);
+			}
 
 			auto error = ::TdhFormatProperty(info, mapInfo, pointerSize,
 				pi.nonStructType.InType, pi.nonStructType.OutType,
