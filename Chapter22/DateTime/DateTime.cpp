@@ -81,7 +81,7 @@ HRESULT DisplayInterfaces(IInspectable* pInst) {
 	WCHAR name[256];
 	for(ULONG i = 0; i < count; i++) {
 		if(SUCCEEDED(::StringFromGUID2(iid[i], siid, _countof(siid)))) {
-			printf("Interface: %ws", siid);
+			printf("I: %ws", siid);
 			CRegKey key;
 			if(ERROR_SUCCESS == key.Open(HKEY_CLASSES_ROOT, 
 				(std::wstring(L"\\Interface\\") + siid).c_str(), KEY_QUERY_VALUE)) {
