@@ -21,6 +21,7 @@ int main() {
 	char message[1024];
 	DWORD read;
 	SYSTEMTIME st;
+
 	while (::GetMailslotInfo(hMailSlot, nullptr, &nextSize, nullptr, nullptr)) {
 		if (nextSize == MAILSLOT_NO_MESSAGE) {
 			::Sleep(100);
