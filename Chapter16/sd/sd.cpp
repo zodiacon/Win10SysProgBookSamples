@@ -133,7 +133,7 @@ void DisplaySD(const PSECURITY_DESCRIPTOR sd) {
 
 int wmain(int argc, const wchar_t* argv[]) {
 	if (argc < 2) {
-		printf("Usage: sd [[-p <pid>] | [-t <tid>] | [-f <filename>] | [-k <regkey>] | [objectname]]\n");
+		printf("Usage: sd [[-p <pid>] | [-t <tid>] | [-f <filename>] | [-k <regkey>] | [objectname] [-s sddl]]\n");
 		printf("If no arguments specified, shows the current process security descriptor\n");
 	}
 
@@ -141,6 +141,7 @@ int wmain(int argc, const wchar_t* argv[]) {
 	HANDLE hObject = argc == 1 ? ::GetCurrentProcess() : nullptr;
 	SE_OBJECT_TYPE type = SE_UNKNOWN_OBJECT_TYPE;
 	PCWSTR name = nullptr;
+	bool sddl = false;
 
 	if(argc > 2) {
 		name = argv[2];
@@ -152,18 +153,29 @@ int wmain(int argc, const wchar_t* argv[]) {
 			type = SE_FILE_OBJECT;
 		else if (::_wcsicmp(argv[1], L"-k") == 0)
 			type = SE_REGISTRY_KEY;
+		else if (::_wcsicmp(argv[1], L"-s") == 0)
+			sddl = true;
 	}
 	else if (argc == 2) {
 		name = argv[1];
 		type = SE_KERNEL_OBJECT;
 	}
 
-	if (!hObject && type == SE_UNKNOWN_OBJECT_TYPE) {
+	PSECURITY_DESCRIPTOR sd = nullptr;
+	if (sddl) {
+		if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(name, SDDL_REVISION_1, &sd, nullptr)) {
+			printf("Error: %u\n", ::GetLastError());
+			return 1;
+		}
+		DisplaySD(sd);
+		::LocalFree(sd);
+		return 0;
+	}
+	else if (!hObject && type == SE_UNKNOWN_OBJECT_TYPE) {
 		printf("Error: %u\n", ::GetLastError());
 		return 1;
 	}
 
-	PSECURITY_DESCRIPTOR sd = nullptr;
 	BYTE buffer[1 << 12];
 	DWORD error = 0;
 	if (!hObject) {
