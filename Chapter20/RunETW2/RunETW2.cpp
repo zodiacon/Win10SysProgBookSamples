@@ -176,6 +176,16 @@ bool RunSession(const std::vector<GUID>& providers, PCWSTR filename, bool realTi
 	TRACEHANDLE hParse = 0;
 	HANDLE hThread = nullptr;
 
+	for (auto& guid : providers) {
+		status = ::EnableTraceEx(&guid, nullptr, hTrace, TRUE,
+			TRACE_LEVEL_VERBOSE, 0, 0,
+			EVENT_ENABLE_PROPERTY_STACK_TRACE, nullptr);
+		if (ERROR_SUCCESS != status) {
+			::StopTrace(hTrace, sessionName, props);
+			return false;
+		}
+	}
+
 	if(realTime) {
 		g_hStop = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
@@ -198,16 +208,6 @@ bool RunSession(const std::vector<GUID>& providers, PCWSTR filename, bool realTi
 		}
 	}
 
-	for(auto& guid : providers) {
-		status = ::EnableTraceEx(&guid, nullptr, hTrace, TRUE, 
-			TRACE_LEVEL_VERBOSE, 0, 0, 
-			EVENT_ENABLE_PROPERTY_STACK_TRACE, nullptr);
-		if(ERROR_SUCCESS != status) {
-			::StopTrace(hTrace, sessionName, props);
-			return false;
-		}
-	}
-
 	if(realTime) {
 		::SetConsoleCtrlHandler([](auto code) {
 			if(code == CTRL_C_EVENT) {
@@ -217,6 +217,7 @@ bool RunSession(const std::vector<GUID>& providers, PCWSTR filename, bool realTi
 			return FALSE;
 			}, TRUE);
 		::WaitForSingleObject(g_hStop, INFINITE);
+		::StopTrace(hTrace, sessionName, props);
 		::CloseTrace(hParse);
 		::WaitForSingleObject(hThread, INFINITE);
 		::CloseHandle(g_hStop);
@@ -227,9 +228,9 @@ bool RunSession(const std::vector<GUID>& providers, PCWSTR filename, bool realTi
 
 		char dummy[4];
 		gets_s(dummy);
-	}
 
-	::StopTrace(hTrace, sessionName, props);
+		::StopTrace(hTrace, sessionName, props);
+	}
 
 	return true;
 }

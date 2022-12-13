@@ -97,7 +97,7 @@ void DisplaySD(const PSECURITY_DESCRIPTOR sd) {
 	if (::ConvertSecurityDescriptorToStringSecurityDescriptor(sd, SDDL_REVISION_1,
 		OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
 		&sddl, nullptr) && sddl) {
-		printf("SD: %ws\n", sddl);
+		printf("SDDL: %ws\n", sddl);
 		::LocalFree(sddl);
 	}
 

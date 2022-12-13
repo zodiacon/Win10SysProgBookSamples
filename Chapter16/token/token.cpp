@@ -5,6 +5,31 @@
 #include <stdio.h>
 #include <string>
 #include <sddl.h>
+#include <winternl.h>
+
+struct TOKEN_SECURITY_ATTRIBUTE_V1 {
+	UNICODE_STRING  Name;
+	USHORT  ValueType;
+	USHORT  Reserved;
+	ULONG   Flags;
+	ULONG   ValueCount;
+	union {
+		PLONG64                                         pInt64;
+		PULONG64                                        pUint64;
+		PUNICODE_STRING                                 pString;
+		//PTOKEN_SECURITY_ATTRIBUTE_FQBN_VALUE            pFqbn;
+		//PTOKEN_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE    pOctetString;
+	} Values;
+};
+
+struct TOKEN_SECURITY_ATTRIBUTES_INFORMATION {
+	USHORT  Version;
+	USHORT  Reserved;
+	ULONG   AttributeCount;
+	union {
+		TOKEN_SECURITY_ATTRIBUTE_V1* pAttributeV1;
+	} Attribute;
+};
 
 void DisplayTokenInfo(HANDLE hToken);
 
@@ -227,9 +252,37 @@ void DisplayTokenInfo(HANDLE hToken) {
 	if (::GetTokenInformation(hToken, TokenCapabilities, buffer, sizeof(buffer), &len)) {
 		auto caps = (TOKEN_GROUPS*)buffer;
 		if (caps->GroupCount > 0) {
+			printf("\n");
 			int count = printf("Capabilities\n");
 			printf("%s\n", std::string(count - 1, '-').c_str());
 			DisplaySidsAndAttributes(caps->Groups, caps->GroupCount);
+		}
+	}
+	if (::GetTokenInformation(hToken, TokenUserClaimAttributes, buffer, sizeof(buffer), &len)) {
+		auto claims = (CLAIM_SECURITY_ATTRIBUTES_INFORMATION*)buffer;
+		if (claims->AttributeCount > 0) {
+			int count = printf("User claims\n");
+			printf("%s\n", std::string(count - 1, '-').c_str());
+			for (DWORD i = 0; i < count; i++) {
+				auto& claim = claims->Attribute.pAttributeV1[i];
+				printf("%ws\n", claim.Name);
+			}
+		}
+	}
+
+	if (::GetTokenInformation(hToken, TokenSecurityAttributes, buffer, sizeof(buffer), &len)) {
+		auto claims = (TOKEN_SECURITY_ATTRIBUTES_INFORMATION*)buffer;
+		if (claims->AttributeCount > 0) {
+			int count = printf("Security attributes\n");
+			printf("%s\n", std::string(count - 1, '-').c_str());
+
+			for (DWORD i = 0; i < claims->AttributeCount; i++) {
+				auto att = &claims->Attribute.pAttributeV1[i];
+				auto name = att->Name;
+				printf("%wZ\n", name);
+				for (ULONG n = 0; n < att->ValueCount; n++) {
+				}
+			}
 		}
 	}
 }
