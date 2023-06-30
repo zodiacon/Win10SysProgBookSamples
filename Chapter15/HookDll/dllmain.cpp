@@ -21,7 +21,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, PVOID pReserved) {
 	return TRUE;
 }
 
-extern "C" LRESULT CALLBACK HookFunction(int code, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK HookFunction(int code, WPARAM wParam, LPARAM lParam) {
 	if (code == HC_ACTION) {
 		auto msg = (MSG*)lParam;
 		if (msg->message == WM_CHAR) {
@@ -34,7 +34,7 @@ extern "C" LRESULT CALLBACK HookFunction(int code, WPARAM wParam, LPARAM lParam)
 	return ::CallNextHookEx(g_hHook, code, wParam, lParam);
 }
 
-extern "C" void WINAPI SetNotificationThread(DWORD threadId, HHOOK hHook) {
+void WINAPI SetNotificationThread(DWORD threadId, HHOOK hHook) {
 	g_ThreadId = threadId;
 	g_hHook = hHook;
 }
