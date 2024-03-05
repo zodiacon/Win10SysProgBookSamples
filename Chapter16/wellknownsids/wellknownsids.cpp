@@ -38,11 +38,12 @@ int main() {
 		::ConvertSidToStringSid((PSID)buffer, &name);
 		DWORD accountNameSize = _countof(accountName);
 		DWORD domainNameSize = _countof(domainName);
-		::LookupAccountSid(nullptr, (PSID)buffer, accountName, &accountNameSize,
-			domainName, &domainNameSize, &use);
+		if (::LookupAccountSid(nullptr, (PSID)buffer, accountName, &accountNameSize,
+			domainName, &domainNameSize, &use)) {
 
-		printf("Well known sid %3d: %-20ws %ws\\%ws (%s)\n", i, 
-			name, domainName, accountName, SidNameUseToString(use));
+			printf("Well known sid %3d: %-20ws %ws\\%ws (%s)\n", i,
+				name, domainName, accountName, SidNameUseToString(use));
+		}
 		::LocalFree(name);
 	}
 

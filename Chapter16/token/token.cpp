@@ -33,8 +33,14 @@ struct TOKEN_SECURITY_ATTRIBUTES_INFORMATION {
 
 void DisplayTokenInfo(HANDLE hToken);
 
+#pragma comment(lib, "ntdll")
+
+extern "C" NTSTATUS NTAPI NtImpersonateAnonymousToken(
+	_In_ HANDLE ThreadHandle
+);
+
 int main(int argc, const char* argv[]) {
-	DWORD id = argc > 1 ? atoi(argv[1]) : 0;
+	int id = argc > 1 ? atoi(argv[1]) : 0;
 
 	if (id == 0 && argc > 1) {
 		printf("Usage: token <pid or tid>\n");
@@ -43,7 +49,13 @@ int main(int argc, const char* argv[]) {
 
 	HANDLE hObject = nullptr;
 	HANDLE hToken = nullptr;
-	while (id) {
+	if (id < 0) {
+		auto status = NtImpersonateAnonymousToken(GetCurrentThread());
+		if (NT_SUCCESS(status))
+			hToken = GetCurrentThreadToken();
+	}
+
+	else while (id) {
 		hObject = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
 		if (hObject) {
 			printf("Opening token for process %u\n", id);
@@ -263,7 +275,7 @@ void DisplayTokenInfo(HANDLE hToken) {
 		if (claims->AttributeCount > 0) {
 			int count = printf("User claims\n");
 			printf("%s\n", std::string(count - 1, '-').c_str());
-			for (DWORD i = 0; i < count; i++) {
+			for (DWORD i = 0; i < claims->AttributeCount; i++) {
 				auto& claim = claims->Attribute.pAttributeV1[i];
 				printf("%ws\n", claim.Name);
 			}
