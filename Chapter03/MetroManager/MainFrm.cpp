@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "resource.h"
 
-#include "aboutdlg.h"
+#include "Aboutdlg.h"
 #include "View.h"
 #include "MainFrm.h"
 
