@@ -29,6 +29,6 @@ private:
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 private:
-	HANDLE m_hMutex;
+	HANDLE m_hMutex = nullptr;
 	CListBox m_List;
 };
