@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "resource.h"
 
-#include "aboutdlg.h"
+#include "Aboutdlg.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
