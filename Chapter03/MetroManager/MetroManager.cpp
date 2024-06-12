@@ -5,7 +5,7 @@
 
 #include "resource.h"
 
-#include "aboutdlg.h"
+#include "Aboutdlg.h"
 #include "MainFrm.h"
 
 CAppModule _Module;
