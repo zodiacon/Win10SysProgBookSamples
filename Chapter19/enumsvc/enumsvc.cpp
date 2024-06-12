@@ -138,7 +138,7 @@ std::unique_ptr<BYTE[]> GetServiceConfig(const wchar_t* name) {
 	assert(buffer);
 
 	DWORD needed;
-	BOOL ok = ::QueryServiceConfig(hScm, reinterpret_cast<QUERY_SERVICE_CONFIG*>(buffer.get()), size, &needed);
+	BOOL ok = ::QueryServiceConfig(hService, reinterpret_cast<QUERY_SERVICE_CONFIG*>(buffer.get()), size, &needed);
 	::CloseServiceHandle(hService);
 	::CloseServiceHandle(hScm);
 
