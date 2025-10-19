@@ -105,8 +105,8 @@ void DisplayProcessInfo(HPSS hSnapshot) {
 	PSS_PROCESS_INFORMATION psinfo;
 	if(ERROR_SUCCESS == ::PssQuerySnapshot(hSnapshot, PSS_QUERY_PROCESS_INFORMATION, &psinfo, sizeof(psinfo))) {
 		printf("Image file: %ws\n", psinfo.ImageFileName);
-		printf("PID: %u\n", psinfo.ProcessId);
-		printf("Parent PID: %u\n", psinfo.ParentProcessId);
+		printf("PID: %lu\n", psinfo.ProcessId);
+		printf("Parent PID: %lu\n", psinfo.ParentProcessId);
 		printf("Create time: %s\n", TimeToString(psinfo.CreateTime).c_str());
 		printf("User time: %s\n", TimeSpanToString(psinfo.UserTime).c_str());
 		printf("Kernel time: %s\n", TimeSpanToString(psinfo.KernelTime).c_str());
@@ -124,13 +124,13 @@ void DisplayHandlesInfo(HPSS hSnapshot) {
 		return;
 	}
 
-	printf("Handles captured: %u\n", info.HandlesCaptured);
+	printf("Handles captured: %lu\n", info.HandlesCaptured);
 
 	HPSSWALK hWalk;
 	if(ERROR_SUCCESS == ::PssWalkMarkerCreate(nullptr, &hWalk)) {
 		PSS_HANDLE_ENTRY handle;
 		while(ERROR_SUCCESS == ::PssWalkSnapshot(hSnapshot, PSS_WALK_HANDLES, hWalk, &handle, sizeof(handle))) {
-			printf("Handle: %4u  Name: %ws Type: %ws\n",
+			wprintf(L"Handle: %4lu  Name: %s Type: %s\n",
 				HandleToULong(handle.Handle),
 				std::wstring(handle.ObjectName, handle.ObjectNameLength / sizeof(WCHAR)).c_str(),
 				std::wstring(handle.TypeName, handle.TypeNameLength / sizeof(WCHAR)).c_str());
@@ -146,13 +146,13 @@ void DisplayThreadInfo(HPSS hSnapshot) {
 		return;
 	}
 
-	printf("Threads captured: %u\n", info.ThreadsCaptured);
+	printf("Threads captured: %lu\n", info.ThreadsCaptured);
 
 	HPSSWALK hWalk;
 	if(ERROR_SUCCESS == ::PssWalkMarkerCreate(nullptr, &hWalk)) {
 		PSS_THREAD_ENTRY thread;
 		while(ERROR_SUCCESS == ::PssWalkSnapshot(hSnapshot, PSS_WALK_THREADS, hWalk, &thread, sizeof(thread))) {
-			printf("TID: %6u Created: %s Priority: %2d User: %s Kernel: %s\n",
+			printf("TID: %6lu Created: %s Priority: %2d User: %s Kernel: %s\n",
 				thread.ThreadId,
 				TimeToString(thread.CreateTime).c_str(),
 				thread.Priority,
